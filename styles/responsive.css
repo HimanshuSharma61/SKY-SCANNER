@@ -1,0 +1,148 @@
+/* ========================================================
+   SKYSCANNER RESPONSIVE & MOBILE STYLES
+   ======================================================== */
+
+@media (max-width: 1024px) {
+  .search-inputs-grid {
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+  }
+
+  .btn-swap-airports {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .search-field-wrapper:nth-child(4) {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .search-field-wrapper:nth-child(5) {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .search-field-wrapper:nth-child(6) {
+    grid-column: 1 / 3;
+    grid-row: 3;
+  }
+
+  .btn-search-flights {
+    grid-column: 3;
+    grid-row: 3;
+    width: 100%;
+  }
+
+  .results-layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-sidebar {
+    display: none; /* Can be toggled with filter button on mobile */
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-top-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-top-row {
+    height: 56px;
+  }
+
+  .nav-tabs-list {
+    display: none; /* Handled by mobile subnav */
+  }
+
+  .hero-main-title {
+    font-size: 1.6rem;
+  }
+
+  .search-widget-card {
+    padding: 18px 16px;
+  }
+
+  .search-inputs-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .btn-swap-airports {
+    display: none;
+  }
+
+  .search-field-wrapper:nth-child(4),
+  .search-field-wrapper:nth-child(5),
+  .search-field-wrapper:nth-child(6),
+  .btn-search-flights {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .flight-card {
+    grid-template-columns: 1fr;
+  }
+
+  .flight-card-cta {
+    border-left: none;
+    border-top: 1px solid var(--sk-border-subtle);
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .price-container {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .flight-leg {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .flight-times-route {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .price-calendar-strip {
+    grid-template-columns: repeat(7, 120px);
+    overflow-x: auto;
+  }
+
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom-row {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .car-card {
+    grid-template-columns: 1fr;
+  }
+
+  .car-price-col {
+    border-left: none;
+    border-top: 1px solid var(--sk-border-subtle);
+    align-items: stretch;
+  }
+
+  .form-row.two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-row {
+    grid-template-columns: 1fr;
+  }
+}

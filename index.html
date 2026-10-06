@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en-GB" dir="ltr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Flight Ticket Booking: Cheap Flights &amp; Air Tickets | Skyscanner</title>
+  <meta name="description"
+    content="Compare cheap flight booking from all major airlines and online travel agents, and find the cheapest air tickets to your favourite destinations." />
+
+  <meta property="og:title" content="Flight Ticket Booking: Cheap Flights &amp; Air Tickets | Skyscanner" />
+  <meta property="og:description"
+    content="Compare cheap flight booking from all major airlines and online travel agents, and find the cheapest air tickets to your favourite destinations." />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/navbar.css" />
+  <link rel="stylesheet" href="styles/hero-search.css" />
+  <link rel="stylesheet" href="styles/results.css" />
+  <link rel="stylesheet" href="styles/filters.css" />
+  <link rel="stylesheet" href="styles/hotels-cars.css" />
+  <link rel="stylesheet" href="styles/explore.css" />
+  <link rel="stylesheet" href="styles/modal.css" />
+  <link rel="stylesheet" href="styles/responsive.css" />
+</head>
+
+<body>
+
+  <!-- Top Global Loading Bar -->
+  <div class="search-loading-bar" id="search-loading-bar"></div>
+
+  <!-- Skyscanner Header / Navigation Bar -->
+  <header class="sk-navbar">
+    <div class="navbar-container">
+      <div class="navbar-top-row">
+        <!-- Logo -->
+        <a href="#" class="brand-logo-link" id="brand-logo" aria-label="Skyscanner Homepage">
+          <svg class="brand-icon-svg" viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="18" fill="#0062E3" />
+            <path d="M20 7L24 16L33 20L24 24L20 33L16 24L7 20L16 16Z" fill="#FFFFFF" />
+            <circle cx="20" cy="20" r="4" fill="#00A698" />
+          </svg>
+          <span class="brand-text">Skyscanner<span>.</span></span>
+        </a>
+
+        <!-- Main Search Category Tabs -->
+        <ul class="nav-tabs-list" role="tablist">
+          <li>
+            <a href="#flights" class="sk-nav-tab active" data-tab="flights" id="tab-flights" role="tab"
+              aria-selected="true">
+              <span class="nav-tab-icon">✈️</span>
+              <span>Flights</span>
+            </a>
+          </li>
+          <li>
+            <a href="#hotels" class="sk-nav-tab" data-tab="hotels" id="tab-hotels" role="tab" aria-selected="false">
+              <span class="nav-tab-icon">🏨</span>
+              <span>Hotels</span>
+            </a>
+          </li>
+          <li>
+            <a href="#cars" class="sk-nav-tab" data-tab="cars" id="tab-cars" role="tab" aria-selected="false">
+              <span class="nav-tab-icon">🚗</span>
+              <span>Car hire</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Right Action Controls -->
+        <div class="navbar-actions">
+          <!-- Essential Free API Settings Button -->
+          <button class="nav-action-btn btn-api-pill" id="btn-api-settings"
+            title="Manage Free Travel APIs & Live Flight Keys">
+            <span>🔑</span>
+            <span>Free APIs</span>
+          </button>
+
+          <!-- Currency & Country Selector -->
+          <button class="nav-action-btn" id="nav-currency-btn" title="Change country, currency, and language">
+            <span>🇮🇳 ₹ · INR</span>
+          </button>
+
+          <!-- Saved Trips / Favourites -->
+          <button class="nav-action-btn" id="btn-saved-trips" title="View saved flights and trips">
+            <span>❤️</span>
+            <span>Saved</span>
+            <span class="saved-badge" id="saved-count-badge" style="display: none;">0</span>
+          </button>
+
+          <!-- Log in -->
+          <button class="nav-action-btn btn-nav-login" id="btn-login">
+            Log in
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero & Search Banner Section -->
+  <section class="hero-banner-section">
+    <div class="container">
+      <div class="hero-header-content">
+        <h1 class="hero-main-title">Millions of cheap flights. One simple search.</h1>
+        <p class="hero-sub-title">Find the best deals from 1,200+ airlines and travel providers worldwide.</p>
+      </div>
+
+      <!-- Flights Search Widget -->
+      <div class="search-widget-card" id="flight-search-container">
+        <!-- Search Options Bar -->
+        <div class="search-options-bar">
+          <div class="trip-type-group" role="radiogroup">
+            <button type="button" class="trip-type-btn active" data-trip="roundtrip" id="trip-roundtrip">Return</button>
+            <button type="button" class="trip-type-btn" data-trip="oneway" id="trip-oneway">One way</button>
+            <button type="button" class="trip-type-btn" data-trip="multicity" id="trip-multicity">Multi-city</button>
+          </div>
+
+          <div class="search-checkboxes-group">
+            <label class="sk-checkbox-label">
+              <input type="checkbox" id="filter-direct-only" />
+              <span>Direct flights only</span>
+            </label>
+            <label class="sk-checkbox-label">
+              <input type="checkbox" id="filter-nearby-airports" />
+              <span>Add nearby airports</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Flight Search Form -->
+        <form id="flight-search-form">
+          <div class="search-inputs-grid">
+            <!-- Origin Airport -->
+            <div class="search-field-wrapper">
+              <label class="field-label" for="flight-origin-input">From</label>
+              <div class="field-input-box">
+                <span class="field-icon">🛫</span>
+                <input type="text" class="field-text-input" id="flight-origin-input"
+                  placeholder="Country, city or airport" autocomplete="off" required />
+              </div>
+              <div class="autocomplete-dropdown" id="flight-origin-dropdown"></div>
+            </div>
+
+            <!-- Swap Airports Button -->
+            <button type="button" class="btn-swap-airports" id="btn-swap-airports" title="Swap origin and destination">
+              ⇄
+            </button>
+
+            <!-- Destination Airport -->
+            <div class="search-field-wrapper">
+              <label class="field-label" for="flight-dest-input">To</label>
+              <div class="field-input-box">
+                <span class="field-icon">🛬</span>
+                <input type="text" class="field-text-input" id="flight-dest-input"
+                  placeholder="Country, city or airport" autocomplete="off" required />
+              </div>
+              <div class="autocomplete-dropdown" id="flight-dest-dropdown"></div>
+            </div>
+
+            <!-- Depart Date -->
+            <div class="search-field-wrapper">
+              <label class="field-label" for="flight-depart-date">Depart</label>
+              <div class="field-input-box">
+                <span class="field-icon">📅</span>
+                <input type="date" class="field-text-input" id="flight-depart-date" required />
+              </div>
+            </div>
+
+            <!-- Return Date -->
+            <div class="search-field-wrapper" id="return-date-container">
+              <label class="field-label" for="flight-return-date">Return</label>
+              <div class="field-input-box">
+                <span class="field-icon">📅</span>
+                <input type="date" class="field-text-input" id="flight-return-date" />
+              </div>
+            </div>
+
+            <!-- Travellers & Cabin Class -->
+            <div class="search-field-wrapper">
+              <label class="field-label">Travellers and cabin class</label>
+              <div class="field-input-box travellers-trigger-box" id="travellers-trigger">
+                <span class="field-icon">👤</span>
+                <span class="travellers-summary-text" id="travellers-summary">1 adult, Economy</span>
+              </div>
+
+              <!-- Travellers Popover Dropdown -->
+              <div class="travellers-popover" id="travellers-popover">
+                <div class="popover-stepper-row">
+                  <div class="stepper-label-col">
+                    <span class="stepper-title">Adults</span>
+                    <span class="stepper-subtitle">16+ years</span>
+                  </div>
+                  <div class="stepper-controls">
+                    <button type="button" class="btn-stepper" id="btn-adults-minus">-</button>
+                    <span class="stepper-value" id="adults-count">1</span>
+                    <button type="button" class="btn-stepper" id="btn-adults-plus">+</button>
+                  </div>
+                </div>
+
+                <div class="popover-stepper-row">
+                  <div class="stepper-label-col">
+                    <span class="stepper-title">Children</span>
+                    <span class="stepper-subtitle">0 to 15 years</span>
+                  </div>
+                  <div class="stepper-controls">
+                    <button type="button" class="btn-stepper" id="btn-children-minus">-</button>
+                    <span class="stepper-value" id="children-count">0</span>
+                    <button type="button" class="btn-stepper" id="btn-children-plus">+</button>
+                  </div>
+                </div>
+
+                <div class="popover-cabin-classes">
+                  <div class="cabin-classes-title">Cabin Class</div>
+                  <div class="cabin-class-pills-list">
+                    <div class="cabin-class-pill active" data-class="Economy">Economy</div>
+                    <div class="cabin-class-pill" data-class="Premium Economy">Prem Economy</div>
+                    <div class="cabin-class-pill" data-class="Business">Business</div>
+                    <div class="cabin-class-pill" data-class="First Class">First Class</div>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-sm" id="btn-done-travellers"
+                  style="width: 100%;">Done</button>
+              </div>
+            </div>
+
+            <!-- Primary Search Button -->
+            <button type="submit" class="btn btn-primary btn-search-flights" id="btn-search-flights">
+              Search flights ➔
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLIGHTS TAB VIEW -->
+  <main id="flights-tab-view" class="results-section">
+    <div class="container">
+      <div class="results-layout-grid">
+
+        <!-- Left Filter Sidebar -->
+        <aside class="filters-sidebar" id="filters-sidebar">
+          <div class="filters-header-row">
+            <h3 class="filters-main-title">Filter by</h3>
+            <button type="button" class="btn-clear-filters" id="btn-clear-filters">Reset all</button>
+          </div>
+
+          <!-- Stops Filter -->
+          <div class="filter-group">
+            <div class="filter-group-title">Stops</div>
+            <div class="filter-options-list">
+              <label class="filter-radio-label">
+                <div>
+                  <input type="radio" name="filter-stops" value="all" checked />
+                  <span>All flights</span>
+                </div>
+              </label>
+              <label class="filter-radio-label">
+                <div>
+                  <input type="radio" name="filter-stops" value="direct" />
+                  <span>Direct only</span>
+                </div>
+                <span class="filter-price-from" id="filter-direct-min-price">from ₹4,199</span>
+              </label>
+              <label class="filter-radio-label">
+                <div>
+                  <input type="radio" name="filter-stops" value="1stop" />
+                  <span>1 stop</span>
+                </div>
+                <span class="filter-price-from">from ₹3,850</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Departure Times Filter -->
+          <div class="filter-group">
+            <div class="filter-group-title">Departure times</div>
+            <div class="time-slots-grid">
+              <button type="button" class="time-slot-btn" data-slot="early">
+                <span class="slot-icon">🌅</span>
+                <span class="slot-label">Before 6am</span>
+                <span class="slot-time">00:00 - 06:00</span>
+              </button>
+              <button type="button" class="time-slot-btn" data-slot="morning">
+                <span class="slot-icon">☀️</span>
+                <span class="slot-label">Morning</span>
+                <span class="slot-time">06:00 - 12:00</span>
+              </button>
+              <button type="button" class="time-slot-btn" data-slot="afternoon">
+                <span class="slot-icon">🌤️</span>
+                <span class="slot-label">Afternoon</span>
+                <span class="slot-time">12:00 - 18:00</span>
+              </button>
+              <button type="button" class="time-slot-btn" data-slot="evening">
+                <span class="slot-icon">🌙</span>
+                <span class="slot-label">Evening</span>
+                <span class="slot-time">18:00 - 24:00</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Airlines Filter -->
+          <div class="filter-group">
+            <div class="filter-group-title">Airlines</div>
+            <div class="filter-options-list" id="airline-filters-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Price Range Slider Filter -->
+          <div class="filter-group">
+            <div class="filter-group-title">
+              <span>Max Price</span>
+              <span id="price-slider-display">Up to ₹1,00,000</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" class="sk-slider" id="price-range-slider" min="2000" max="100000" step="500"
+                value="100000" />
+            </div>
+          </div>
+
+          <!-- Greener Flights Toggle -->
+          <div class="filter-group">
+            <div class="eco-filter-card">
+              <label>
+                <input type="checkbox" id="filter-greener" />
+                <span>🌱 Greener choice flights only (lower CO2 emissions)</span>
+              </label>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Results Column -->
+        <section class="results-main-col">
+          <!-- Count and Sector Title -->
+          <div class="results-summary-row">
+            <h2 class="results-count-title" id="results-count-title">Loading flights...</h2>
+          </div>
+
+          <!-- 7-Day Price Calendar Scrubber Bar -->
+          <div class="price-calendar-strip" id="price-calendar-strip">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Sort Tabs Bar -->
+          <div class="sort-tabs-bar" role="tablist">
+            <button type="button" class="sort-tab-btn active" data-sort="cheapest" id="sort-cheapest">
+              <span class="sort-title">Cheapest</span>
+              <span class="sort-subtitle">From ₹3,850 · Best price</span>
+            </button>
+            <button type="button" class="sort-tab-btn" data-sort="best" id="sort-best">
+              <span class="sort-title">Best</span>
+              <span class="sort-subtitle">Optimal balance of price & duration</span>
+            </button>
+            <button type="button" class="sort-tab-btn" data-sort="fastest" id="sort-fastest">
+              <span class="sort-title">Fastest</span>
+              <span class="sort-subtitle">Shortest flight duration</span>
+            </button>
+          </div>
+
+          <!-- Flight Results List -->
+          <div class="flight-results-list" id="flight-results-list">
+            <!-- Flight cards rendered by JS -->
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- HOTELS TAB VIEW (Hidden by default) -->
+  <section id="hotels-tab-view" class="hotels-view-container container" style="display: none;">
+    <div id="hotels-results-container">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- CAR HIRE TAB VIEW (Hidden by default) -->
+  <section id="cars-tab-view" class="cars-view-container container" style="display: none;">
+    <div id="cars-results-container">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- "Explore Everywhere" / Popular Destinations Section -->
+  <section class="explore-section" id="explore-section">
+    <div class="container">
+      <div class="explore-header-row">
+        <h2 class="explore-title">Can't decide where to go? Explore everywhere</h2>
+        <p class="explore-subtitle">Popular destinations with live weather forecasts and lowest fares from your origin
+        </p>
+      </div>
+      <div class="explore-destinations-grid" id="explore-destinations-grid">
+        <!-- Rendered with live Open-Meteo weather by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Badges & Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">🛡️</div>
+          <div class="feature-content">
+            <h4>Transparent Pricing</h4>
+            <p>We show all mandatory taxes, carrier fees, and charges upfront so there are never any surprise fees at
+              checkout.</p>
+          </div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">⚡</div>
+          <div class="feature-content">
+            <h4>Live Comparison</h4>
+            <p>Compare deals side-by-side from airline direct websites, MakeMyTrip, Cleartrip, Agoda, and Booking.com.
+            </p>
+          </div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrapper">🌱</div>
+          <div class="feature-content">
+            <h4>Greener Choices</h4>
+            <p>Look out for the Greener Choice badge on flights that emit significantly less CO2 than average on the
+              route.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="sk-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <div class="footer-brand-col">
+          <div class="brand-text">Skyscanner<span>.</span></div>
+          <p>Skyscanner is a leading global travel search site, providing instant online comparisons for millions of
+            flights, hotels and car hire deals.</p>
+        </div>
+        <div>
+          <div class="footer-col-title">Explore</div>
+          <ul class="footer-links-list">
+            <li><a href="#">Domestic Flights</a></li>
+            <li><a href="#">International Flights</a></li>
+            <li><a href="#">Cities &amp; Airports</a></li>
+            <li><a href="#">Hotels in India</a></li>
+            <li><a href="#">Car Hire Deals</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Company</div>
+          <ul class="footer-links-list">
+            <li><a href="#">About Skyscanner</a></li>
+            <li><a href="#">Why Skyscanner?</a></li>
+            <li><a href="#">Media &amp; Press</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Help &amp; Legal</div>
+          <ul class="footer-links-list">
+            <li><a href="#">Help &amp; Support</a></li>
+            <li><a href="#">Privacy Settings</a></li>
+            <li><a href="#">Security &amp; Cookies</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#" id="footer-api-link">API Keys Configuration</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div>© Skyscanner Ltd 2002 – 2026 · Built with high precision &amp; live travel API integration</div>
+        <div>India · English (UK) · ₹ INR</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL 1: Booking & Deal Modal -->
+  <div class="sk-modal-overlay" id="booking-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box">
+      <div class="modal-header-bar">
+        <h2 class="modal-title" id="booking-modal-title">Select Travel Provider &amp; Book</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-booking-modal" aria-label="Close modal">×</button>
+      </div>
+      <div class="modal-scroll-body" id="booking-modal-body">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Currency & Country Switcher -->
+  <div class="sk-modal-overlay" id="currency-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box">
+      <div class="modal-header-bar">
+        <h2 class="modal-title">Regional Settings &amp; Currency</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-currency-modal" aria-label="Close modal">×</button>
+      </div>
+      <div class="modal-scroll-body">
+        <p class="modal-subtext">Prices will be converted in real-time using live free currency exchange rates.</p>
+        <div class="currency-options-grid" id="currency-options-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Essential Free Travel APIs & Key Manager -->
+  <div class="sk-modal-overlay" id="api-settings-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box" style="max-width: 760px;">
+      <div class="modal-header-bar">
+        <h2 class="modal-title">Essential Free Travel APIs &amp; Integrations</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-api-modal"
+          onclick="document.getElementById('api-settings-modal').classList.remove('active')"
+          aria-label="Close modal">×</button>
+      </div>
+      <div class="modal-scroll-body" id="api-settings-body">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Application Modules -->
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

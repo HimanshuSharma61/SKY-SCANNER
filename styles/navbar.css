@@ -1,0 +1,150 @@
+/* ========================================================
+   SKYSCANNER NAVBAR STYLES
+   ======================================================== */
+
+.sk-navbar {
+  background-color: var(--sk-navy-main);
+  color: var(--sk-text-white);
+  padding: 0;
+  position: relative;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.navbar-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+/* Brand Logo */
+.brand-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.brand-icon-svg {
+  width: 32px;
+  height: 32px;
+  fill: #0062E3;
+}
+
+.brand-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.brand-text span {
+  color: #00A698;
+}
+
+/* Navigation Tabs (Flights, Hotels, Car hire) */
+.nav-tabs-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.sk-nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-full);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.sk-nav-tab:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+}
+
+.sk-nav-tab.active {
+  background-color: var(--sk-blue-primary);
+  color: #fff;
+}
+
+.nav-tab-icon {
+  font-size: 1.1rem;
+}
+
+/* Right Nav Controls */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-action-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-api-pill {
+  background: rgba(0, 166, 152, 0.2);
+  border-color: var(--sk-green-eco);
+  color: #5cf1e3;
+  font-weight: 600;
+}
+
+.btn-api-pill:hover {
+  background: rgba(0, 166, 152, 0.35);
+}
+
+.saved-badge {
+  background-color: var(--sk-coral-deal);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  margin-left: 2px;
+}
+
+.btn-nav-login {
+  background-color: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 6px 16px;
+}
+
+.btn-nav-login:hover {
+  background-color: #fff;
+  color: var(--sk-navy-main);
+}

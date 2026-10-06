@@ -1,0 +1,603 @@
+/* ========================================================
+   SKYSCANNER MODALS & OVERLAYS STYLES
+   ======================================================== */
+
+.sk-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(2, 18, 44, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sk-modal-overlay.active {
+  display: flex;
+}
+
+.sk-modal-box {
+  background-color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-header-bar {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--sk-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.btn-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--sk-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-modal-close:hover {
+  color: var(--sk-text-primary);
+}
+
+.modal-scroll-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* Booking Modal Progress & Views */
+.booking-flight-summary-card {
+  background-color: #F8F9FC;
+  border: 1px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.flight-mini-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.flight-mini-code {
+  font-size: 1.1rem;
+  color: var(--sk-blue-primary);
+}
+
+.flight-mini-airline {
+  font-size: 0.85rem;
+  color: var(--sk-text-secondary);
+  margin-left: 8px;
+}
+
+.flight-mini-times {
+  font-size: 0.85rem;
+  color: var(--sk-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tag-pill {
+  background: #E8F2FC;
+  color: var(--sk-blue-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.modal-subheading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.modal-subtext {
+  font-size: 0.85rem;
+  color: var(--sk-text-secondary);
+  margin-bottom: 18px;
+}
+
+/* Provider Deal Rows */
+.providers-comparison-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.provider-deal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border: 1.5px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.provider-deal-row:hover {
+  border-color: #CBD2DF;
+  background-color: #FAFBFC;
+}
+
+.provider-deal-row.recommended-deal {
+  border-color: var(--sk-green-eco);
+  background-color: #F4FAF9;
+}
+
+.provider-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.provider-ratings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.star-rating {
+  font-size: 0.8rem;
+  color: #FFB300;
+  font-weight: 700;
+}
+
+.deal-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.deal-pill.cheapest {
+  background: #E6F4EA;
+  color: #137333;
+}
+
+.deal-pill.popular {
+  background: #E8F2FC;
+  color: var(--sk-blue-primary);
+}
+
+.provider-price-col {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.provider-price-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--sk-text-primary);
+}
+
+/* Passenger Details Form */
+.booking-progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--sk-border-subtle);
+  padding-bottom: 12px;
+}
+
+.booking-progress-bar .step {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sk-text-muted);
+}
+
+.booking-progress-bar .step.active {
+  color: var(--sk-blue-primary);
+  font-weight: 700;
+}
+
+.booking-progress-bar .step.completed {
+  color: var(--sk-green-eco);
+}
+
+.passenger-form-container h3 {
+  margin-bottom: 4px;
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+  margin-bottom: 18px;
+}
+
+.form-row {
+  margin-bottom: 16px;
+}
+
+.form-row.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--sk-text-primary);
+}
+
+.booking-order-summary {
+  background: #F8F9FC;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.summary-line.total-line {
+  border-top: 1px solid var(--sk-border-subtle);
+  padding-top: 8px;
+  font-size: 1rem;
+}
+
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+/* E-Ticket Confirmation Card */
+.confirmed-view {
+  text-align: center;
+}
+
+.booking-success-header {
+  margin-bottom: 24px;
+}
+
+.success-checkmark {
+  width: 56px;
+  height: 56px;
+  background-color: var(--sk-green-eco);
+  color: #fff;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 0 auto 12px;
+}
+
+.e-ticket-card {
+  background: #fff;
+  border: 2px dashed #0062E3;
+  border-radius: var(--radius-md);
+  padding: 24px;
+  text-align: left;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+}
+
+.ticket-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--sk-border-subtle);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.badge-mini {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.ticket-pnr {
+  text-align: right;
+}
+
+.pnr-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--sk-text-muted);
+}
+
+.pnr-code {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--sk-blue-primary);
+  letter-spacing: 1px;
+}
+
+.ticket-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.t-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--sk-text-muted);
+  font-weight: 600;
+}
+
+.t-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--sk-text-primary);
+}
+
+.ticket-flight-path {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F1F2F8;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+}
+
+.tf-point {
+  display: flex;
+  flex-direction: column;
+}
+
+.tf-city {
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+}
+
+.tf-code {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--sk-text-primary);
+}
+
+.tf-time {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sk-blue-primary);
+}
+
+.tf-connector {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sk-text-muted);
+}
+
+.ticket-footer-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-top: 1px solid var(--sk-border-subtle);
+  padding-top: 16px;
+}
+
+.qr-mock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--sk-text-muted);
+}
+
+.gate-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+}
+
+.booked-with {
+  font-weight: 600;
+  color: var(--sk-blue-primary);
+}
+
+.modal-footer-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* Currency Modal */
+.currency-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.currency-option-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--sk-border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.currency-option-item:hover {
+  background: #F8F9FC;
+  border-color: #CBD2DF;
+}
+
+.currency-option-item.active {
+  border-color: var(--sk-blue-primary);
+  background: var(--sk-blue-light);
+}
+
+.curr-symbol {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--sk-blue-primary);
+  width: 28px;
+}
+
+.curr-names {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.curr-code {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.curr-title {
+  font-size: 0.75rem;
+  color: var(--sk-text-secondary);
+}
+
+.curr-check {
+  font-weight: 800;
+  color: var(--sk-blue-primary);
+}
+
+/* API Settings Modal */
+.api-settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.api-notice-box {
+  background: #E8F2FC;
+  border: 1px solid #C4DFF9;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  gap: 14px;
+}
+
+.notice-icon {
+  font-size: 1.5rem;
+}
+
+.notice-text p {
+  font-size: 0.85rem;
+  color: var(--sk-text-secondary);
+  margin-top: 4px;
+}
+
+.api-service-card {
+  border: 1px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.api-service-card.active-service {
+  background-color: #F8FAF9;
+  border-color: #BBE0DA;
+}
+
+.service-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.service-header h4 {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.service-desc {
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.status-badge.connected {
+  background-color: #E6F4EA;
+  color: #137333;
+}
+
+.status-badge.optional {
+  background-color: #F1F2F8;
+  color: var(--sk-text-muted);
+}
+
+.service-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.service-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.test-feedback {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.api-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sk-border-subtle);
+}
