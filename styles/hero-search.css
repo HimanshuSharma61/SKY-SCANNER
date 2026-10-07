@@ -102,21 +102,27 @@
   display: grid;
   grid-template-columns: 2.2fr auto 2.2fr 1.6fr 1.6fr 2.2fr auto;
   gap: 8px;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .search-field-wrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .field-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--sk-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 .field-input-box {
@@ -128,7 +134,9 @@
   padding: 8px 12px;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   cursor: text;
+  height: 52px;
   min-height: 52px;
+  box-sizing: border-box;
 }
 
 .field-input-box:focus-within {
@@ -167,7 +175,8 @@
   color: var(--sk-blue-primary);
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-sm);
-  margin: 0 -4px;
+  margin: 0 -4px 7px -4px;
+  align-self: flex-end;
   z-index: 2;
 }
 
@@ -396,7 +405,46 @@
 /* Search Submit Button */
 .btn-search-flights {
   height: 52px;
-  padding: 0 28px;
+  padding: 0 24px;
   font-size: 1rem;
+  font-weight: 700;
   white-space: nowrap;
+  align-self: flex-end;
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  background-color: var(--sk-blue-primary);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(7, 112, 227, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.btn-search-flights:hover {
+  background-color: var(--sk-blue-hover);
+  box-shadow: 0 4px 14px rgba(7, 112, 227, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-search-flights:hover .search-btn-icon {
+  transform: translateX(3px);
+}
+
+.btn-search-flights:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(7, 112, 227, 0.3);
+}
+
+.btn-search-flights:focus-visible {
+  outline: 2px solid var(--sk-blue-primary);
+  outline-offset: 2px;
+}
+
+.search-btn-icon {
+  display: inline-block;
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
 }
