@@ -448,3 +448,17 @@
   transition: transform var(--transition-fast);
   flex-shrink: 0;
 }
+
+.btn-search-flights:disabled {
+  opacity: 0.88;
+  cursor: wait;
+}
+
+.btn-search-flights.loading .search-btn-icon {
+  animation: planeSpin 1s linear infinite;
+}
+
+@keyframes planeSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

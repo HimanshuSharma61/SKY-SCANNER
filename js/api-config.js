@@ -20,8 +20,8 @@ export const DEFAULT_API_CONFIG = {
   // AviationStack (Free Tier: 100 API calls/month)
   // Signup: https://aviationstack.com/signup/free
   aviationStack: {
-    enabled: false,
-    apiKey: '',
+    enabled: true,
+    apiKey: '607f188b2a9ddaaf01b59e4753888b85',
     signupUrl: 'https://aviationstack.com/signup/free',
     name: 'AviationStack Live Flights',
     description: 'Real-time flight statuses, route tracking & airport schedules'
@@ -67,6 +67,14 @@ export function getApiConfig() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
+      // Ensure AviationStack API key from defaults is set if missing or empty
+      if (!parsed.aviationStack || !parsed.aviationStack.apiKey) {
+        parsed.aviationStack = {
+          ...DEFAULT_API_CONFIG.aviationStack,
+          apiKey: DEFAULT_API_CONFIG.aviationStack.apiKey,
+          enabled: true
+        };
+      }
       return { ...DEFAULT_API_CONFIG, ...parsed };
     }
   } catch (e) {
@@ -118,15 +126,25 @@ export async function testAmadeusConnection(clientId, clientSecret) {
 export async function testAviationStackConnection(apiKey) {
   if (!apiKey) return { success: false, message: 'Please enter an AviationStack API Key' };
   try {
-    const res = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(apiKey)}&limit=1`);
-    if (res.ok) {
+    const endpoint = `http://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(apiKey.trim())}&limit=1`;
+    let res = null;
+    try {
+      res = await fetch(endpoint);
+    } catch {
+      // Fallback via CORS proxy if running under HTTPS
+      const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`;
+      res = await fetch(proxy);
+    }
+
+    if (res && res.ok) {
       const data = await res.json();
-      if (data.error) return { success: false, message: data.error.message || 'Invalid API Key' };
-      return { success: true, message: 'Connected! AviationStack API is active.' };
+      if (data.error) return { success: false, message: data.error.message || data.error.info || 'Invalid API Key' };
+      const total = data.pagination?.total || 0;
+      return { success: true, message: `Connected! AviationStack API is active (${total.toLocaleString()} flights tracked).` };
     } else {
-      return { success: false, message: `HTTP status ${res.status}` };
+      return { success: false, message: `HTTP status ${res ? res.status : 'error'}` };
     }
   } catch (e) {
-    return { success: false, message: 'Network error or CORS restriction. Using intelligent local flight engine.' };
+    return { success: false, message: 'Network error connecting to AviationStack. Falling back to local engine.' };
   }
 }

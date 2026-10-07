@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupModals();
 
   // 11. Initial Flight Search & Explore Destinations
-  await triggerFlightSearch();
+  await triggerFlightSearch(false);
   await renderExploreDestinations();
 
   // 12. Search Form Submit
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (flightSearchForm) {
     flightSearchForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      triggerFlightSearch();
+      triggerFlightSearch(true);
     });
   }
 
@@ -203,7 +203,7 @@ function setupSwapAirportsButton() {
     swapBtn.classList.add('rotating');
     setTimeout(() => swapBtn.classList.remove('rotating'), 300);
 
-    triggerFlightSearch();
+    triggerFlightSearch(true);
   });
 }
 

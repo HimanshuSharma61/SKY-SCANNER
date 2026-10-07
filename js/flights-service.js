@@ -82,8 +82,32 @@ export async function searchFlights(searchParams) {
   const origin = getAirportByCode(originCode) || { code: originCode, name: originCode, city: originCode, lat: 28.5, lon: 77.1, countryCode: 'IN' };
   const dest = getAirportByCode(destCode) || { code: destCode, name: destCode, city: destCode, lat: 19.1, lon: 72.8, countryCode: 'IN' };
 
-  // Check if live Amadeus API key is present
   const apiConfig = getApiConfig();
+
+  // 1. Check if live AviationStack API key is configured & enabled
+  if (apiConfig.aviationStack && apiConfig.aviationStack.enabled && apiConfig.aviationStack.apiKey) {
+    try {
+      const liveAviationResults = await fetchAviationStackFlights({
+        apiKey: apiConfig.aviationStack.apiKey,
+        origin,
+        dest,
+        departDate,
+        returnDate,
+        tripType,
+        adults,
+        children,
+        cabinClass,
+        directOnly
+      });
+      if (liveAviationResults && liveAviationResults.length > 0) {
+        return liveAviationResults;
+      }
+    } catch (err) {
+      console.warn('AviationStack Live API request failed, falling back to smart realistic generator:', err);
+    }
+  }
+
+  // 2. Check if live Amadeus API key is present
   if (apiConfig.amadeus.enabled && apiConfig.amadeus.clientId) {
     try {
       const liveResults = await fetchAmadeusFlights(origin.code, dest.code, departDate, returnDate, adults, cabinClass);
@@ -95,7 +119,7 @@ export async function searchFlights(searchParams) {
     }
   }
 
-  // Realistic Smart Generation Engine
+  // 3. Realistic Smart Generation Engine
   return generateRealisticFlights({
     origin,
     dest,
@@ -318,4 +342,194 @@ export function generatePriceCalendar(baseDateStr, originCode, destCode) {
 async function fetchAmadeusFlights(origin, dest, departDate, returnDate, adults, cabinClass) {
   // Free Amadeus Flight Offers Search v2
   return null; // Will fallback automatically to high fidelity engine
+}
+
+// ========================================================
+// AVIATIONSTACK LIVE FLIGHTS INTEGRATION
+// ========================================================
+const aviationStackCache = new Map();
+
+async function fetchAviationStackFlights({ apiKey, origin, dest, departDate, returnDate, tripType, adults, children, cabinClass, directOnly }) {
+  const cleanKey = apiKey ? apiKey.trim() : '';
+  if (!cleanKey) return null;
+
+  const cacheKey = `${origin.code}_${dest.code}`;
+  const now = Date.now();
+  if (aviationStackCache.has(cacheKey)) {
+    const cached = aviationStackCache.get(cacheKey);
+    // Cache for 15 minutes to preserve monthly request quota
+    if (now - cached.timestamp < 15 * 60 * 1000 && cached.data?.length > 0) {
+      console.log(`[AviationStack] Serving cached live flights for ${cacheKey}`);
+      return adaptAviationStackResults(cached.data, { origin, dest, departDate, returnDate, tripType, adults, children, cabinClass });
+    }
+  }
+
+  const endpoint = `http://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(cleanKey)}&dep_iata=${encodeURIComponent(origin.code)}&arr_iata=${encodeURIComponent(dest.code)}&limit=15`;
+  
+  let json = null;
+  try {
+    const res = await fetch(endpoint);
+    if (res.ok) {
+      json = await res.json();
+    }
+  } catch (err) {
+    // If running in HTTPS or blocked by mixed content, attempt CORS proxy
+    try {
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`;
+      const res = await fetch(proxyUrl);
+      if (res.ok) {
+        json = await res.json();
+      }
+    } catch (proxyErr) {
+      console.warn('[AviationStack] Proxy request failed:', proxyErr);
+    }
+  }
+
+  if (!json || !json.data || json.data.length === 0 || json.error) {
+    if (json?.error) {
+      console.warn('[AviationStack] API returned message:', json.error.message || json.error.info || json.error);
+    }
+    return null; // Fallback to internal realistic engine
+  }
+
+  // Cache live items
+  aviationStackCache.set(cacheKey, { timestamp: now, data: json.data });
+
+  return adaptAviationStackResults(json.data, { origin, dest, departDate, returnDate, tripType, adults, children, cabinClass });
+}
+
+function adaptAviationStackResults(rawFlights, { origin, dest, departDate, returnDate, tripType, adults, children, cabinClass }) {
+  const distanceKm = calculateDistance(origin.lat, origin.lon, dest.lat, dest.lon);
+  const directDurationMinutes = Math.round((distanceKm / 780) * 60 + 35);
+
+  let classMultiplier = 1;
+  if (cabinClass === 'Premium Economy') classMultiplier = 1.7;
+  else if (cabinClass === 'Business') classMultiplier = 3.2;
+  else if (cabinClass === 'First Class') classMultiplier = 5.8;
+
+  const isDomestic = origin.countryCode === 'IN' && dest.countryCode === 'IN';
+  const baseRatePerKm = isDomestic ? 3.9 : 4.8;
+  const baseFare = Math.max(3199, Math.round(distanceKm * baseRatePerKm * classMultiplier));
+
+  const validItems = rawFlights.filter(f => f && f.airline && f.flight);
+  if (validItems.length === 0) return null;
+
+  return validItems.map((item, idx) => {
+    const airlineName = item.airline?.name || 'Airline';
+    const airlineIata = item.airline?.iata || (airlineName ? airlineName.substring(0, 2).toUpperCase() : '6E');
+    const flightIata = item.flight?.iata || `${airlineIata} ${item.flight?.number || ''}`.trim() || `${airlineIata} ${idx + 200}`;
+
+    // Departure time
+    let depTimeStr = '09:00';
+    let depH = 9, depM = 0;
+    if (item.departure?.scheduled) {
+      try {
+        const d = new Date(item.departure.scheduled);
+        depH = d.getHours();
+        depM = d.getMinutes();
+        depTimeStr = `${depH.toString().padStart(2, '0')}:${depM.toString().padStart(2, '0')}`;
+      } catch {}
+    }
+
+    // Arrival time and duration
+    let durationMins = directDurationMinutes;
+    let arrTimeStr = '11:15';
+    if (item.arrival?.scheduled && item.departure?.scheduled) {
+      try {
+        const dArr = new Date(item.arrival.scheduled);
+        const dDep = new Date(item.departure.scheduled);
+        const diff = Math.round((dArr - dDep) / 60000);
+        if (diff >= 35 && diff <= 1440) {
+          durationMins = diff;
+        }
+        arrTimeStr = `${dArr.getHours().toString().padStart(2, '0')}:${dArr.getMinutes().toString().padStart(2, '0')}`;
+      } catch {}
+    } else {
+      const arrTotal = depH * 60 + depM + durationMins;
+      arrTimeStr = `${(Math.floor(arrTotal / 60) % 24).toString().padStart(2, '0')}:${(arrTotal % 60).toString().padStart(2, '0')}`;
+    }
+
+    const airlineMeta = AIRLINES[airlineIata] || {
+      code: airlineIata,
+      name: airlineName,
+      logoBg: '#05203C',
+      rating: 4.4
+    };
+
+    // Calculate price based on fare engine + slot variation
+    const priceVariance = (idx % 4 === 1 ? -0.1 : idx % 4 === 2 ? 0.08 : (idx * 0.03 - 0.04));
+    const singlePrice = Math.round(baseFare * (1 + priceVariance));
+    const totalPrice = singlePrice * (adults + children * 0.75) * (tripType === 'roundtrip' ? 1.9 : 1);
+
+    const aircraftName = item.aircraft?.iata ? `Boeing/Airbus (${item.aircraft.iata})` : (idx % 2 === 0 ? 'Airbus A320neo' : 'Boeing 737 MAX 8');
+    const isGreener = aircraftName.includes('neo') || aircraftName.includes('MAX') || aircraftName.includes('787');
+    const co2Reduction = isGreener ? (15 + (idx % 9)) : 0;
+
+    const providers = [
+      { name: `${airlineMeta.name} Direct`, price: totalPrice, rating: 4.8, reliable: true },
+      { name: 'MakeMyTrip', price: Math.round(totalPrice * 0.98), rating: 4.6, badge: 'Popular' },
+      { name: 'Cleartrip', price: Math.round(totalPrice * 0.975), rating: 4.5, badge: 'Cheapest' },
+      { name: 'Booking.com', price: Math.round(totalPrice * 0.99), rating: 4.7 },
+      { name: 'Agoda', price: Math.round(totalPrice * 0.985), rating: 4.4 }
+    ].sort((a, b) => a.price - b.price);
+
+    // Complementary return leg if roundtrip
+    let returnLeg = null;
+    if (tripType === 'roundtrip') {
+      const retDepH = (depH + 5) % 24;
+      const retDepM = (depM + 25) % 60;
+      const retDepTimeStr = `${retDepH.toString().padStart(2, '0')}:${retDepM.toString().padStart(2, '0')}`;
+      const retArrTotal = retDepH * 60 + retDepM + durationMins;
+      const retArrTimeStr = `${(Math.floor(retArrTotal / 60) % 24).toString().padStart(2, '0')}:${(retArrTotal % 60).toString().padStart(2, '0')}`;
+
+      returnLeg = {
+        flightNumber: `${airlineIata} ${Math.floor(200 + (idx * 43 + 101) % 700)}`,
+        origin: dest,
+        dest: origin,
+        depTime: retDepTimeStr,
+        arrTime: retArrTimeStr,
+        durationMinutes: durationMins,
+        durationStr: formatDuration(durationMins),
+        isDirect: true,
+        stopsCount: 0,
+        aircraft: aircraftName
+      };
+    }
+
+    return {
+      id: `aviation-${flightIata.replace(/\s+/g, '')}-${idx}`,
+      airline: airlineMeta,
+      flightNumber: flightIata,
+      aircraft: aircraftName,
+      isGreener,
+      co2Reduction,
+      origin: { code: origin.code, name: item.departure?.airport || origin.name, city: origin.city },
+      dest: { code: dest.code, name: item.arrival?.airport || dest.name, city: dest.city },
+      depTime: depTimeStr,
+      arrTime: arrTimeStr,
+      durationMinutes: durationMins,
+      durationStr: formatDuration(durationMins),
+      nextDay: false,
+      isDirect: true,
+      stopsCount: 0,
+      stops: [],
+      score: calculateFlightScore(totalPrice, durationMins, 0, airlineMeta.rating),
+      priceINR: totalPrice,
+      cheapestProvider: providers[0],
+      providers,
+      amenities: {
+        baggage: cabinClass === 'Economy' ? '15 kg check-in + 7 kg cabin' : '30 kg check-in + 10 kg cabin',
+        wifi: ['UK', 'EK', 'QR', 'SQ'].includes(airlineIata),
+        power: true,
+        meal: cabinClass !== 'Economy' || ['AI', 'UK', 'EK', 'QR'].includes(airlineIata)
+      },
+      cabinClass,
+      terminal: item.departure?.terminal || null,
+      flightStatus: item.flight_status || 'scheduled',
+      delay: item.departure?.delay || null,
+      isLiveApi: true,
+      apiSource: 'AviationStack Live Radar',
+      returnLeg
+    };
+  });
 }

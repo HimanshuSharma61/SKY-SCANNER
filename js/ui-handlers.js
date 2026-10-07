@@ -159,7 +159,8 @@ export function renderFlightResults() {
   if (countHeader) {
     const origin = getAirportByCode(state.flightParams.originCode);
     const dest = getAirportByCode(state.flightParams.destCode);
-    countHeader.innerHTML = `<strong>${filtered.length} flights</strong> from ${origin ? origin.city : state.flightParams.originCode} to ${dest ? dest.city : state.flightParams.destCode}`;
+    const hasLive = filtered.some(f => f.isLiveApi);
+    countHeader.innerHTML = `<strong>${filtered.length} flights</strong> from ${origin ? origin.city : state.flightParams.originCode} to ${dest ? dest.city : state.flightParams.destCode}${hasLive ? ' <span class="badge-live-radar" style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;background:#E8F5E9;color:#1B5E20;font-weight:700;padding:3px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;">📡 Live AviationStack Radar</span>' : ''}`;
   }
 
   if (filtered.length === 0) {
@@ -185,11 +186,16 @@ export function renderFlightResults() {
 
     return `
       <div class="flight-card" data-flight-id="${flight.id}">
-        ${flight.isGreener ? `
+        ${flight.isLiveApi ? `
+          <div class="flight-card-banner" style="background: #E8F5E9; color: #1B5E20; border-bottom: 1px solid #C8E6C9; padding: 6px 16px; font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+            <span>📡 Live Radar · Status: <strong style="text-transform: capitalize;">${flight.flightStatus}</strong>${flight.terminal ? ` · Terminal ${flight.terminal}` : ''}${flight.delay ? ` · Delay +${flight.delay}m` : ''}</span>
+            <span style="font-size: 0.72rem; opacity: 0.85;">AviationStack Live</span>
+          </div>
+        ` : (flight.isGreener ? `
           <div class="flight-card-banner eco-banner">
             <span class="eco-icon">🌱</span> Greener choice: <strong>${flight.co2Reduction}% less CO2</strong> than average on this route
           </div>
-        ` : ''}
+        ` : '')}
 
         <div class="flight-card-main">
           <!-- Outbound Leg -->
@@ -671,15 +677,170 @@ export function updateSavedCountBadge() {
   }
 }
 
+// Render Skeleton Flight Cards while loading
+export function renderSkeletonFlightCards() {
+  const container = document.getElementById('flight-results-list');
+  if (!container) return;
+
+  container.innerHTML = Array(4).fill(0).map(() => `
+    <div class="flight-card skeleton-card">
+      <div class="flight-card-main">
+        <div class="flight-leg-row">
+          <div class="airline-meta-col">
+            <div class="skeleton-box skeleton-logo"></div>
+            <div class="skeleton-box" style="width: 55px; height: 12px; margin-top: 6px;"></div>
+          </div>
+          <div class="flight-time-col">
+            <div class="skeleton-box" style="width: 68px; height: 22px;"></div>
+            <div class="skeleton-box" style="width: 44px; height: 12px; margin-top: 4px;"></div>
+          </div>
+          <div class="flight-duration-col">
+            <div class="skeleton-box" style="width: 58px; height: 13px; margin: 0 auto 6px;"></div>
+            <div class="flight-route-visual">
+              <div class="route-line" style="background: #E8EEF5;"></div>
+            </div>
+            <div class="skeleton-box" style="width: 44px; height: 12px; margin: 6px auto 0;"></div>
+          </div>
+          <div class="flight-time-col">
+            <div class="skeleton-box" style="width: 68px; height: 22px;"></div>
+            <div class="skeleton-box" style="width: 44px; height: 12px; margin-top: 4px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="flight-card-cta">
+        <div class="flight-deal-col" style="align-items: flex-end;">
+          <div class="skeleton-box" style="width: 72px; height: 12px; margin-bottom: 6px;"></div>
+          <div class="skeleton-box" style="width: 96px; height: 26px; margin-bottom: 10px;"></div>
+          <div class="skeleton-box" style="width: 86px; height: 36px; border-radius: 8px;"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Format date nicely (e.g. "10 Oct 2026")
+function formatDisplayDate(dateStr) {
+  if (!dateStr) return 'Selected dates';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+// Show Flight Search Loading Screen Animation
+function playFlightSearchAnimation(flightParams) {
+  const overlay = document.getElementById('flight-search-loading-overlay');
+  const searchBtn = document.getElementById('btn-search-flights');
+  if (!overlay) return () => Promise.resolve();
+
+  const origin = getAirportByCode(flightParams.originCode) || { code: flightParams.originCode, city: flightParams.originCode };
+  const dest = getAirportByCode(flightParams.destCode) || { code: flightParams.destCode, city: flightParams.destCode };
+
+  const originCodeEl = document.getElementById('load-origin-code');
+  const originCityEl = document.getElementById('load-origin-city');
+  const destCodeEl = document.getElementById('load-dest-code');
+  const destCityEl = document.getElementById('load-dest-city');
+  const dateTextEl = document.getElementById('load-date-text');
+  const travellersTextEl = document.getElementById('load-travellers-text');
+  const progressBar = document.getElementById('load-progress-bar');
+  const pathTrail = document.getElementById('load-path-trail');
+  const planeIcon = document.getElementById('loading-plane-icon');
+  const statusText = document.getElementById('load-status-text');
+  const percentText = document.getElementById('load-percent-text');
+
+  if (originCodeEl) originCodeEl.textContent = origin.code;
+  if (originCityEl) originCityEl.textContent = origin.city;
+  if (destCodeEl) destCodeEl.textContent = dest.code;
+  if (destCityEl) destCityEl.textContent = dest.city;
+
+  const depFormatted = formatDisplayDate(flightParams.departDate);
+  const retFormatted = flightParams.tripType === 'roundtrip' && flightParams.returnDate ? ` – ${formatDisplayDate(flightParams.returnDate)}` : '';
+  if (dateTextEl) dateTextEl.textContent = `${depFormatted}${retFormatted}`;
+
+  const travellersStr = `${flightParams.adults || 1} adult${(flightParams.adults || 1) > 1 ? 's' : ''}${flightParams.children ? `, ${flightParams.children} child` : ''}, ${flightParams.cabinClass || 'Economy'}`;
+  if (travellersTextEl) travellersTextEl.textContent = travellersStr;
+
+  // Reset animations
+  if (progressBar) progressBar.style.width = '12%';
+  if (pathTrail) pathTrail.style.width = '12%';
+  if (planeIcon) planeIcon.style.left = '12%';
+  if (percentText) percentText.textContent = '12%';
+  if (statusText) statusText.textContent = 'Connecting to 1,200+ airline systems...';
+
+  // Search button state
+  if (searchBtn) {
+    searchBtn.disabled = true;
+    searchBtn.classList.add('loading');
+  }
+
+  // Render skeleton cards in results view
+  renderSkeletonFlightCards();
+
+  // Show overlay
+  overlay.classList.add('active');
+
+  const keyframes = [
+    { at: 350, progress: 38, plane: 38, text: 'Scanning live fares on IndiGo, Air India, Vistara...' },
+    { at: 750, progress: 68, plane: 68, text: 'Finding direct routes & cheapest connections...' },
+    { at: 1200, progress: 88, plane: 88, text: 'Locking in lowest fares for your dates...' },
+    { at: 1650, progress: 98, plane: 94, text: 'Finalising best flight results...' }
+  ];
+
+  keyframes.forEach(step => setTimeout(() => {
+    if (progressBar) progressBar.style.width = `${step.progress}%`;
+    if (pathTrail) pathTrail.style.width = `${step.progress}%`;
+    if (planeIcon) planeIcon.style.left = `${step.plane}%`;
+    if (percentText) percentText.textContent = `${step.progress}%`;
+    if (statusText) statusText.textContent = step.text;
+  }, step.at));
+
+  const startTime = Date.now();
+
+  return async function finishAnimation() {
+    const elapsed = Date.now() - startTime;
+    const remainingTime = Math.max(0, 1800 - elapsed);
+    if (remainingTime > 0) {
+      await new Promise(r => setTimeout(r, remainingTime));
+    }
+
+    if (progressBar) progressBar.style.width = '100%';
+    if (pathTrail) pathTrail.style.width = '100%';
+    if (planeIcon) planeIcon.style.left = '96%';
+    if (percentText) percentText.textContent = '100%';
+    if (statusText) statusText.textContent = 'Ready! Showing flight results...';
+
+    await new Promise(r => setTimeout(r, 250));
+
+    overlay.classList.remove('active');
+    if (searchBtn) {
+      searchBtn.disabled = false;
+      searchBtn.classList.remove('loading');
+    }
+  };
+}
+
 // Trigger Flight Search
-export async function triggerFlightSearch() {
+export async function triggerFlightSearch(showAnimation = false) {
   const loadingOverlay = document.getElementById('search-loading-bar');
   if (loadingOverlay) loadingOverlay.style.display = 'block';
 
+  let finishAnimation = null;
   const state = AppState.getState();
+
+  if (showAnimation) {
+    finishAnimation = playFlightSearchAnimation(state.flightParams);
+  }
+
   try {
     const results = await searchFlights(state.flightParams);
     const calendar = generatePriceCalendar(state.flightParams.departDate, state.flightParams.originCode, state.flightParams.destCode);
+
+    if (finishAnimation) {
+      await finishAnimation();
+    }
 
     AppState.setState({
       flightResults: results,
@@ -689,8 +850,18 @@ export async function triggerFlightSearch() {
     renderPriceCalendarBar(calendar);
     renderFlightResults();
     populateAirlineFilterCheckboxes(results);
+
+    if (showAnimation) {
+      const resultsSection = document.getElementById('flights-tab-view');
+      if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
   } catch (e) {
     console.error('Error during flight search:', e);
+    if (finishAnimation) {
+      await finishAnimation();
+    }
   } finally {
     if (loadingOverlay) loadingOverlay.style.display = 'none';
   }
@@ -911,7 +1082,7 @@ export async function renderExploreDestinations() {
         const destInput = document.getElementById('flight-dest-input');
         if (destInput) destInput.value = `${airport.city} (${airport.code})`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        triggerFlightSearch();
+        triggerFlightSearch(true);
       }
     });
   });
@@ -1033,7 +1204,7 @@ export function openApiSettingsModal() {
               <h4>📡 AviationStack Flight Radar API</h4>
               <p class="service-desc">Real-time flight statuses, route tracking & airport schedules. <a href="https://aviationstack.com/signup/free" target="_blank" rel="noopener">Get Free Key ↗</a></p>
             </div>
-            <span class="status-badge ${config.aviationStack.apiKey ? 'connected' : 'optional'}">${config.aviationStack.apiKey ? '● Configured' : 'Optional'}</span>
+            <span class="status-badge ${config.aviationStack.apiKey ? 'connected' : 'optional'}">${config.aviationStack.apiKey ? '● Connected &amp; Active' : 'Optional'}</span>
           </div>
           <div class="service-inputs">
             <div class="form-group">

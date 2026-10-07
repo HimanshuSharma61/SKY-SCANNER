@@ -99,6 +99,40 @@
     text-align: left;
   }
 
+  .loading-screen-card {
+    padding: 24px 18px 20px;
+    border-radius: 18px;
+  }
+
+  .loading-airport-code {
+    font-size: 1.6rem;
+  }
+
+  .loading-airport-city {
+    font-size: 0.75rem;
+    max-width: 80px;
+  }
+
+  .loading-flight-path {
+    height: 38px;
+  }
+
+  .loading-plane-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .loading-trip-info {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    gap: 6px;
+  }
+
+  .partner-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
   .price-container {
     align-items: flex-start;
     text-align: left;
