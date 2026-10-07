@@ -4,7 +4,7 @@ A full-featured, responsive, high-fidelity frontend replica of [Skyscanner](http
 
 ## 🚀 Live Local Server
 The project is running on your local machine:
-- **Local URL:** [http://localhost:5173/](http://localhost:5173/)
+- **Local URL:** https://skyscannerns.netlify.app/
 - **Or open directly:** Double-click [`index.html`](file:///d:/New%20folder/index.html) in your browser.
 
 ---
