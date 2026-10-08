@@ -21,6 +21,7 @@ import {
   renderFlightResults,
   updateActiveFiltersBadge
 } from './ui-handlers.js';
+import { openInfoModal, closeInfoModal } from './info-modal.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Initialize live currency exchange rates
@@ -397,23 +398,22 @@ function setupModals() {
   // Car Booking Modal Close
   document.getElementById('btn-close-car-modal')?.addEventListener('click', closeCarModal);
 
+  // Footer Information & Help Modal Close
+  document.getElementById('btn-close-info-modal')?.addEventListener('click', closeInfoModal);
+
+  // Footer Information Links (Help & Support, Domestic Flights, Privacy, etc.)
+  document.querySelectorAll('.footer-info-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const topic = link.getAttribute('data-topic') || 'help-support';
+      openInfoModal(topic);
+    });
+  });
+
   // Footer API link
   document.getElementById('footer-api-link')?.addEventListener('click', (e) => {
     e.preventDefault();
     openApiSettingsModal();
-  });
-
-  // Footer Hotels and Cars links
-  document.getElementById('footer-hotels-link')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    document.querySelector('.sk-nav-tab[data-tab="hotels"]')?.click();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  document.getElementById('footer-cars-link')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    document.querySelector('.sk-nav-tab[data-tab="cars"]')?.click();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   // Saved Trips Modal

@@ -790,6 +790,43 @@
     justify-content: space-between;
   }
 
+  /* Info Modal Responsive Rules */
+  .help-quick-cards-grid,
+  .routes-cards-grid,
+  .security-badges-row,
+  .why-us-grid,
+  .sustainability-pillars-grid,
+  .careers-benefits-grid,
+  .hotel-dest-showcase,
+  .car-classes-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stats-counter-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .privacy-switch-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .switch-control {
+    align-self: flex-end;
+  }
+
+  .dept-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dept-row .btn {
+    width: 100%;
+  }
+
   /* Search Loading Screen Overlay */
   .loading-screen-card {
     padding: 24px 16px 20px;

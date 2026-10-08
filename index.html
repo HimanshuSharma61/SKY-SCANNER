@@ -493,30 +493,30 @@
         <div>
           <div class="footer-col-title">Explore</div>
           <ul class="footer-links-list">
-            <li><a href="#">Domestic Flights</a></li>
-            <li><a href="#">International Flights</a></li>
-            <li><a href="#">Cities &amp; Airports</a></li>
-            <li><a href="#" id="footer-hotels-link">Hotels in India</a></li>
-            <li><a href="#" id="footer-cars-link">Car Hire Deals</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="domestic-flights">Domestic Flights</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="international-flights">International Flights</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="cities-airports">Cities &amp; Airports</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="hotels-india" id="footer-hotels-link">Hotels in India</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="car-hire-deals" id="footer-cars-link">Car Hire Deals</a></li>
           </ul>
         </div>
         <div>
           <div class="footer-col-title">Company</div>
           <ul class="footer-links-list">
-            <li><a href="#">About Skyscanner</a></li>
-            <li><a href="#">Why Skyscanner?</a></li>
-            <li><a href="#">Media &amp; Press</a></li>
-            <li><a href="#">Sustainability</a></li>
-            <li><a href="#">Careers</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="about">About Skyscanner</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="why-skyscanner">Why Skyscanner?</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="media-press">Media &amp; Press</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="sustainability">Sustainability</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="careers">Careers</a></li>
           </ul>
         </div>
         <div>
           <div class="footer-col-title">Help &amp; Legal</div>
           <ul class="footer-links-list">
-            <li><a href="#">Help &amp; Support</a></li>
-            <li><a href="#">Privacy Settings</a></li>
-            <li><a href="#">Security &amp; Cookies</a></li>
-            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="help-support">Help &amp; Support</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="privacy-settings">Privacy Settings</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="security-cookies">Security &amp; Cookies</a></li>
+            <li><a href="#" class="footer-info-link" data-topic="terms-of-service">Terms of Service</a></li>
             <li><a href="#" id="footer-api-link">API Keys Configuration</a></li>
           </ul>
         </div>
@@ -595,6 +595,19 @@
       </div>
       <div class="modal-scroll-body" id="api-settings-body">
         <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 6: Footer Information & Help Center Modal -->
+  <div class="sk-modal-overlay" id="info-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box" style="max-width: 820px;">
+      <div class="modal-header-bar">
+        <h2 class="modal-title" id="info-modal-title">Help &amp; Support Centre</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-info-modal" aria-label="Close modal">×</button>
+      </div>
+      <div class="modal-scroll-body" id="info-modal-body">
+        <!-- Rendered dynamically by JS -->
       </div>
     </div>
   </div>
