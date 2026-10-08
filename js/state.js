@@ -66,11 +66,24 @@ const INITIAL_STATE = {
   // Saved / Bookmarks
   savedFlightIds: [],
 
-  // Selected for booking modal
+  // Selected for booking modal (Flights)
   selectedFlightForBooking: null,
   selectedProviderForBooking: null,
   activeBookingStep: 'providers', // 'providers' | 'details' | 'confirmed'
-  latestBookingConfirmed: null
+  latestBookingConfirmed: null,
+
+  // Selected for booking modal (Hotels)
+  selectedHotelForBooking: null,
+  selectedRoomForBooking: null,
+  hotelBookingStep: 'rooms', // 'rooms' | 'guest' | 'confirmed'
+  latestHotelBooking: null,
+
+  // Selected for booking modal (Cars)
+  selectedCarForBooking: null,
+  selectedCarProtection: 'basic', // 'basic' | 'premium'
+  selectedCarAddons: [], // array of addon IDs: 'driver', 'gps', 'seat'
+  carBookingStep: 'protection', // 'protection' | 'driver' | 'confirmed'
+  latestCarBooking: null
 };
 
 class StateManager {

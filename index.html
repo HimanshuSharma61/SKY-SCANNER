@@ -496,8 +496,8 @@
             <li><a href="#">Domestic Flights</a></li>
             <li><a href="#">International Flights</a></li>
             <li><a href="#">Cities &amp; Airports</a></li>
-            <li><a href="#">Hotels in India</a></li>
-            <li><a href="#">Car Hire Deals</a></li>
+            <li><a href="#" id="footer-hotels-link">Hotels in India</a></li>
+            <li><a href="#" id="footer-cars-link">Car Hire Deals</a></li>
           </ul>
         </div>
         <div>
@@ -537,6 +537,32 @@
         <button type="button" class="btn-modal-close" id="btn-close-booking-modal" aria-label="Close modal">×</button>
       </div>
       <div class="modal-scroll-body" id="booking-modal-body">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Hotel Reservation & Room Selection Modal -->
+  <div class="sk-modal-overlay" id="hotel-booking-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box" style="max-width: 720px;">
+      <div class="modal-header-bar">
+        <h2 class="modal-title" id="hotel-modal-title">Select Room &amp; Book Hotel</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-hotel-modal" aria-label="Close hotel modal">×</button>
+      </div>
+      <div class="modal-scroll-body" id="hotel-modal-body">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Car Rental & Protection Modal -->
+  <div class="sk-modal-overlay" id="car-booking-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box" style="max-width: 720px;">
+      <div class="modal-header-bar">
+        <h2 class="modal-title" id="car-modal-title">Select Protection &amp; Reserve Car</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-car-modal" aria-label="Close car modal">×</button>
+      </div>
+      <div class="modal-scroll-body" id="car-modal-body">
         <!-- Rendered dynamically by JS -->
       </div>
     </div>

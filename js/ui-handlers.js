@@ -971,7 +971,7 @@ export function renderHotelsView() {
                 <span class="h-price-sub">per night via ${h.dealProvider}</span>
                 <span class="h-price-huge">${formatCurrency(h.priceINR, currency)}</span>
               </div>
-              <button class="btn btn-primary btn-sm btn-book-hotel" data-hotel-name="${h.name}">View Deal ➔</button>
+              <button class="btn btn-primary btn-sm btn-book-hotel" data-hotel-id="${h.id}" data-hotel-name="${h.name}">Select Hotel ➔</button>
             </div>
           </div>
         </div>
@@ -981,7 +981,9 @@ export function renderHotelsView() {
 
   container.querySelectorAll('.btn-book-hotel').forEach(btn => {
     btn.addEventListener('click', () => {
-      alert(`Booking redirect simulated for ${btn.getAttribute('data-hotel-name')}! In production, this redirects to partner deal.`);
+      const hotelId = btn.getAttribute('data-hotel-id');
+      const hotel = results.find(h => h.id === hotelId);
+      if (hotel) openHotelModal(hotel);
     });
   });
 }
@@ -1030,7 +1032,7 @@ export function renderCarsView() {
             <span class="price-daily">${formatCurrency(c.dailyPriceINR, currency)} / day</span>
             <span class="car-price-huge">${formatCurrency(c.totalPriceINR, currency)}</span>
             <span class="car-total-sub">Total for 3 days</span>
-            <button class="btn btn-primary btn-sm btn-book-car" data-car-name="${c.name}">Select Car ➔</button>
+            <button class="btn btn-primary btn-sm btn-book-car" data-car-id="${c.id}" data-car-name="${c.name}">Select Car ➔</button>
           </div>
         </div>
       `).join('')}
@@ -1039,10 +1041,800 @@ export function renderCarsView() {
 
   container.querySelectorAll('.btn-book-car').forEach(btn => {
     btn.addEventListener('click', () => {
-      alert(`Car hire selection simulated for ${btn.getAttribute('data-car-name')}!`);
+      const carId = btn.getAttribute('data-car-id');
+      const car = cars.find(c => c.id === carId);
+      if (car) openCarModal(car);
     });
   });
 }
+
+// ========================================================
+// HOTEL SELECTION & RESERVATION MODAL
+// ========================================================
+
+function getHotelRoomsForBooking(hotel) {
+  return [
+    {
+      id: 'deluxe',
+      name: 'Deluxe King Room',
+      bed: '1 Extra-large King Bed',
+      size: '36 m²',
+      view: 'Ocean / Garden View',
+      provider: hotel.dealProvider || 'Booking.com',
+      priceINR: hotel.priceINR,
+      badge: 'Bestseller',
+      badgeClass: 'bestseller',
+      breakfast: true,
+      freeCancellation: true,
+      perks: ['Free High-Speed Wi-Fi', 'Breakfast Included', 'Free Cancellation up to 24h prior', 'Pay at Hotel available']
+    },
+    {
+      id: 'suite',
+      name: 'Executive Club Suite',
+      bed: '1 King Bed + Living Lounge',
+      size: '56 m²',
+      view: 'Panoramic Beachfront View',
+      provider: 'Luxury Escapes / Agoda',
+      priceINR: Math.round(hotel.priceINR * 1.35),
+      badge: 'Luxury Upgrade',
+      badgeClass: 'luxury',
+      breakfast: true,
+      freeCancellation: true,
+      perks: ['Club Lounge Access', 'Complimentary Evening Cocktails', 'Free Airport Shuttle', 'Deep Soaking Tub']
+    },
+    {
+      id: 'standard',
+      name: 'Superior Double Room',
+      bed: '1 Queen Bed or 2 Twins',
+      size: '28 m²',
+      view: 'Courtyard View',
+      provider: 'Skyscanner Direct Deals',
+      priceINR: Math.round(hotel.priceINR * 0.82),
+      badge: 'Best Value',
+      badgeClass: 'saver',
+      breakfast: false,
+      freeCancellation: false,
+      perks: ['Free Wi-Fi', 'En-suite Rain Shower', 'Smart TV with Streaming', 'Best Budget Rate']
+    }
+  ];
+}
+
+export function openHotelModal(hotel) {
+  const modal = document.getElementById('hotel-booking-modal');
+  if (!modal) return;
+
+  const rooms = getHotelRoomsForBooking(hotel);
+  AppState.setState({
+    selectedHotelForBooking: hotel,
+    selectedRoomForBooking: rooms[0],
+    hotelBookingStep: 'rooms'
+  });
+
+  renderHotelModalStep(rooms);
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+export function closeHotelModal() {
+  const modal = document.getElementById('hotel-booking-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+export function renderHotelModalStep(roomsList) {
+  const modal = document.getElementById('hotel-booking-modal');
+  const body = document.getElementById('hotel-modal-body');
+  const title = document.getElementById('hotel-modal-title');
+  if (!modal || !body) return;
+
+  const state = AppState.getState();
+  const hotel = state.selectedHotelForBooking;
+  const room = state.selectedRoomForBooking;
+  const step = state.hotelBookingStep;
+  const currency = state.currency;
+  const { hotelParams } = state;
+
+  if (!hotel) return;
+  const rooms = roomsList || getHotelRoomsForBooking(hotel);
+
+  // Calculate nights
+  let nights = 4;
+  if (hotelParams.checkIn && hotelParams.checkOut) {
+    const diff = Math.round((new Date(hotelParams.checkOut) - new Date(hotelParams.checkIn)) / (1000 * 60 * 60 * 24));
+    if (diff > 0) nights = diff;
+  }
+
+  if (step === 'rooms') {
+    if (title) title.textContent = `Select Room · ${hotel.name}`;
+    body.innerHTML = `
+      <div class="booking-step-view">
+        <div class="hotel-summary-modal-card">
+          <img src="${hotel.image}" alt="${hotel.name}" class="hotel-modal-thumb" />
+          <div class="hotel-modal-meta">
+            <h3>${hotel.name}</h3>
+            <div class="hotel-modal-stars">${'★'.repeat(hotel.stars)} · <span class="badge badge-eco" style="font-size:0.75rem;">${hotel.rating} Exceptional</span> (${hotel.reviewsCount} verified reviews)</div>
+            <div class="hotel-modal-location">📍 ${hotel.location}</div>
+            <div class="hotel-stay-pill">📅 ${hotelParams.checkIn || '11-10-2026'} ➔ ${hotelParams.checkOut || '15-10-2026'} · <strong>${nights} nights</strong> · 👤 ${hotelParams.guests || 2} guests</div>
+          </div>
+        </div>
+
+        <h3 class="modal-subheading">Choose your room & deal</h3>
+        <p class="modal-subtext">Compare available room types, included perks, and free cancellation options for your stay.</p>
+
+        <div class="room-options-list">
+          ${rooms.map(r => {
+            const totalForStay = r.priceINR * nights;
+            return `
+              <div class="room-option-card ${r.id === 'deluxe' ? 'featured-room' : ''}">
+                <div class="room-header-row">
+                  <div class="room-title-col">
+                    <span class="room-title">${r.name}</span>
+                    <span class="room-badge ${r.badgeClass}">${r.badge}</span>
+                  </div>
+                  <span class="room-provider-tag">via ${r.provider}</span>
+                </div>
+
+                <div class="room-features-grid">
+                  <span class="room-feature-item">🛏️ ${r.bed}</span>
+                  <span class="room-feature-item">📐 ${r.size}</span>
+                  <span class="room-feature-item">🌅 ${r.view}</span>
+                  ${r.perks.map(p => `<span class="room-feature-item">✓ ${p}</span>`).join('')}
+                </div>
+
+                <div class="room-bottom-cta-row">
+                  <div class="room-price-col">
+                    <span class="room-price-val">${formatCurrency(r.priceINR, currency)} <span style="font-size:0.8rem; font-weight:500; color:var(--sk-text-muted);">/ night</span></span>
+                    <span class="room-price-sub">${formatCurrency(totalForStay, currency)} total for ${nights} nights (taxes included)</span>
+                  </div>
+                  <button type="button" class="btn btn-primary btn-sm btn-choose-room" data-room-id="${r.id}">
+                    Select Room ➔
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+
+    body.querySelectorAll('.btn-choose-room').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const roomId = btn.getAttribute('data-room-id');
+        const chosen = rooms.find(r => r.id === roomId) || rooms[0];
+        AppState.setState({
+          selectedRoomForBooking: chosen,
+          hotelBookingStep: 'guest'
+        });
+        renderHotelModalStep(rooms);
+      });
+    });
+
+  } else if (step === 'guest') {
+    if (title) title.textContent = `Guest Details · ${hotel.name}`;
+    const selectedRoom = room || rooms[0];
+    const totalStay = selectedRoom.priceINR * nights;
+    const taxes = Math.round(totalStay * 0.12);
+    const grandTotal = totalStay + taxes;
+
+    body.innerHTML = `
+      <div class="booking-step-view">
+        <div class="booking-progress-bar">
+          <div class="step completed">1. Room & Rate</div>
+          <div class="step active">2. Guest Information</div>
+          <div class="step">3. Confirmation</div>
+        </div>
+
+        <div class="booking-flight-summary-card" style="margin-bottom: 18px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <strong style="color:var(--sk-blue-primary); font-size:1rem;">${hotel.name} · ${selectedRoom.name}</strong>
+            <span style="font-size:0.85rem; color:var(--sk-text-secondary);">📅 ${hotelParams.checkIn || '11-10-2026'} to ${hotelParams.checkOut || '15-10-2026'} (${nights} nights) · 👤 ${hotelParams.guests || 2} guests · 1 room</span>
+          </div>
+          <span class="badge badge-eco">✓ Free cancellation</span>
+        </div>
+
+        <div class="passenger-form-container">
+          <h3>Guest Information</h3>
+          <p class="form-hint">Please enter guest details matching the government ID presented at check-in.</p>
+
+          <form id="hotel-guest-booking-form">
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label>First & Middle Name *</label>
+                <input type="text" class="sk-input" id="h-firstname" required placeholder="e.g. Rahul" value="Himan" />
+              </div>
+              <div class="form-group">
+                <label>Last / Surname *</label>
+                <input type="text" class="sk-input" id="h-lastname" required placeholder="e.g. Sharma" value="Verma" />
+              </div>
+            </div>
+
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" class="sk-input" id="h-email" required placeholder="name@example.com" value="traveler@example.com" />
+              </div>
+              <div class="form-group">
+                <label>Mobile Number *</label>
+                <input type="tel" class="sk-input" id="h-phone" required placeholder="+91 98765 43210" value="+91 98765 43210" />
+              </div>
+            </div>
+
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label>Bed Preference</label>
+                <select class="sk-select" id="h-bed">
+                  <option value="1 King Bed" selected>1 Large King Bed</option>
+                  <option value="2 Twin Beds">2 Single Twin Beds</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Estimated Arrival Time</label>
+                <select class="sk-select" id="h-arrival">
+                  <option value="14:00 - 15:00" selected>14:00 - 15:00 (Standard Check-in)</option>
+                  <option value="15:00 - 18:00">15:00 - 18:00 (Afternoon)</option>
+                  <option value="18:00 - 22:00">18:00 - 22:00 (Evening)</option>
+                  <option value="Late arrival (after 22:00)">Late arrival (after 22:00)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>Special Requests (Optional)</label>
+              <textarea class="sk-input" id="h-requests" rows="2" placeholder="e.g. High floor room, quiet room, late check-out..."></textarea>
+            </div>
+
+            <div class="booking-order-summary">
+              <div class="summary-line">
+                <span>Room Rate (${nights} nights x ${formatCurrency(selectedRoom.priceINR, currency)}):</span>
+                <span>${formatCurrency(totalStay, currency)}</span>
+              </div>
+              <div class="summary-line">
+                <span>Estimated Taxes & Service Fees (12% GST):</span>
+                <span>${formatCurrency(taxes, currency)}</span>
+              </div>
+              <div class="summary-line total-line">
+                <strong>Total Payable Amount:</strong>
+                <strong class="text-primary">${formatCurrency(grandTotal, currency)}</strong>
+              </div>
+            </div>
+
+            <div class="form-actions-row">
+              <button type="button" class="btn btn-secondary" id="btn-back-to-rooms">Back to Rooms</button>
+              <button type="submit" class="btn btn-primary btn-lg">Confirm & Reserve Room ➔</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-back-to-rooms')?.addEventListener('click', () => {
+      AppState.setState({ hotelBookingStep: 'rooms' });
+      renderHotelModalStep(rooms);
+    });
+
+    document.getElementById('hotel-guest-booking-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const guestName = `${document.getElementById('h-firstname').value} ${document.getElementById('h-lastname').value}`;
+      const email = document.getElementById('h-email').value;
+      const bed = document.getElementById('h-bed').value;
+      const arrival = document.getElementById('h-arrival').value;
+      const requests = document.getElementById('h-requests').value;
+      const ref = `HTL-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      const booking = {
+        ref,
+        hotel,
+        room: selectedRoom,
+        guestName,
+        email,
+        bed,
+        arrival,
+        requests,
+        nights,
+        checkIn: hotelParams.checkIn || '11-10-2026',
+        checkOut: hotelParams.checkOut || '15-10-2026',
+        totalPrice: grandTotal,
+        bookingDate: new Date().toLocaleDateString('en-GB')
+      };
+
+      AppState.setState({
+        hotelBookingStep: 'confirmed',
+        latestHotelBooking: booking
+      });
+      renderHotelModalStep(rooms);
+    });
+
+  } else if (step === 'confirmed') {
+    if (title) title.textContent = `Reservation Confirmed · ${hotel.name}`;
+    const booking = state.latestHotelBooking;
+    if (!booking) return;
+
+    body.innerHTML = `
+      <div class="booking-step-view confirmed-view">
+        <div class="booking-success-header">
+          <div class="success-checkmark">✓</div>
+          <h2>Hotel Reservation Confirmed!</h2>
+          <p>Your room at <strong>${hotel.name}</strong> is reserved and guaranteed. Confirmation voucher sent to <strong>${booking.email}</strong>.</p>
+        </div>
+
+        <div class="e-ticket-card">
+          <div class="ticket-header">
+            <div class="ticket-airline">
+              <span class="badge-mini" style="background:#0770E3;">🏨</span>
+              <strong>${hotel.name}</strong>
+            </div>
+            <div class="ticket-pnr">
+              <span class="pnr-label">HOTEL CONFIRMATION REF</span>
+              <span class="pnr-code">${booking.ref}</span>
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="voucher-details-grid">
+              <div class="t-col">
+                <span class="t-label">PRIMARY GUEST</span>
+                <span class="t-val">${booking.guestName}</span>
+              </div>
+              <div class="t-col">
+                <span class="t-label">ROOM TYPE</span>
+                <span class="t-val">${booking.room.name}</span>
+              </div>
+              <div class="t-col">
+                <span class="t-label">STAY DURATION</span>
+                <span class="t-val">${booking.nights} Nights · 1 Room</span>
+              </div>
+            </div>
+
+            <div class="ticket-flight-path" style="background:#F4FAF9; border:1px solid #C2EAE5;">
+              <div class="tf-point">
+                <span class="tf-city">CHECK-IN</span>
+                <span class="tf-code" style="font-size:1.1rem; color:var(--sk-navy-main);">${booking.checkIn}</span>
+                <span class="tf-time">From 14:00</span>
+              </div>
+              <div class="tf-connector" style="color:var(--sk-green-eco); font-weight:700;">
+                <span>🏨 ${booking.nights} NIGHTS</span>
+              </div>
+              <div class="tf-point">
+                <span class="tf-city">CHECK-OUT</span>
+                <span class="tf-code" style="font-size:1.1rem; color:var(--sk-navy-main);">${booking.checkOut}</span>
+                <span class="tf-time">Until 11:00</span>
+              </div>
+            </div>
+
+            <div class="ticket-footer-row">
+              <div class="qr-mock">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="#05203C">
+                  <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h3v2h-3v-2zm-5 0h2v3h-2v-3zm3 3h2v3h-2v-3zm-3 2h2v2h-2v-2zm5 0h3v2h-3v-2z"/>
+                </svg>
+                <span>SCAN AT CHECK-IN</span>
+              </div>
+              <div class="gate-info">
+                <span>📍 ${hotel.location}</span>
+                <span class="booked-with">Booked via ${booking.room.provider} · Total: ${formatCurrency(booking.totalPrice, currency)} (Pay at Property)</span>
+                <span style="font-size:0.75rem; color:#137333; font-weight:600;">✓ Free cancellation guaranteed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Hotel Voucher</button>
+          <button class="btn btn-primary" id="btn-done-hotel-booking">Done & Back to Hotels</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-done-hotel-booking')?.addEventListener('click', () => {
+      closeHotelModal();
+    });
+  }
+}
+
+// ========================================================
+// CAR HIRE SELECTION & BOOKING MODAL
+// ========================================================
+
+export function openCarModal(car) {
+  const modal = document.getElementById('car-booking-modal');
+  if (!modal) return;
+
+  AppState.setState({
+    selectedCarForBooking: car,
+    selectedCarProtection: 'basic',
+    selectedCarAddons: [],
+    carBookingStep: 'protection'
+  });
+
+  renderCarModalStep();
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+export function closeCarModal() {
+  const modal = document.getElementById('car-booking-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+export function renderCarModalStep() {
+  const modal = document.getElementById('car-booking-modal');
+  const body = document.getElementById('car-modal-body');
+  const title = document.getElementById('car-modal-title');
+  if (!modal || !body) return;
+
+  const state = AppState.getState();
+  const car = state.selectedCarForBooking;
+  const step = state.carBookingStep;
+  const currency = state.currency;
+  const protection = state.selectedCarProtection || 'basic';
+  const selectedAddons = state.selectedCarAddons || [];
+  const { carParams } = state;
+
+  if (!car) return;
+
+  const rentalDays = 3;
+  const basePrice = car.dailyPriceINR * rentalDays;
+  const protectionDaily = protection === 'premium' ? 650 : 0;
+  const protectionTotal = protectionDaily * rentalDays;
+
+  const addonPrices = {
+    driver: 350,
+    gps: 250,
+    seat: 300
+  };
+
+  const addonsTotal = selectedAddons.reduce((acc, a) => acc + (addonPrices[a] || 0) * rentalDays, 0);
+  const totalAmount = basePrice + protectionTotal + addonsTotal;
+
+  if (step === 'protection') {
+    if (title) title.textContent = `Select Protection & Extras · ${car.name}`;
+    body.innerHTML = `
+      <div class="booking-step-view">
+        <div class="car-summary-modal-card">
+          <img src="${car.image}" alt="${car.name}" class="car-modal-thumb" />
+          <div class="car-modal-meta">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="badge badge-deal" style="font-size:0.72rem;">${car.category}</span>
+              <span style="font-size:0.8rem; font-weight:700; color:var(--sk-blue-primary);">${car.supplier} (★ ${car.supplierRating})</span>
+            </div>
+            <h3>${car.name}</h3>
+            <div class="car-modal-specs">
+              <span>👤 ${car.passengers} seats</span>
+              <span>🧳 ${car.luggage} bags</span>
+              <span>⚙️ ${car.transmission}</span>
+              <span>❄️ A/C</span>
+            </div>
+            <div class="hotel-stay-pill">📍 ${carParams.location || 'Goa Dabolim Airport (GOI)'} · 📅 3 Days Rental · ✓ Unlimited mileage</div>
+          </div>
+        </div>
+
+        <h3 class="modal-subheading">Choose your protection cover</h3>
+        <p class="modal-subtext">Choose your level of damage cover and liability for your rental.</p>
+
+        <div class="protection-plans-grid">
+          <div class="protection-plan-card ${protection === 'basic' ? 'active' : ''}" data-protection="basic">
+            <div class="protection-header">
+              <div>
+                <div class="protection-title">Basic Cover</div>
+                <span style="font-size:0.75rem; color:var(--sk-text-muted);">Standard Protection</span>
+              </div>
+              <span class="protection-cost" style="color:var(--sk-green-eco);">Included</span>
+            </div>
+            <ul class="protection-features-list">
+              <li>Third-party liability cover</li>
+              <li>Collision damage waiver (CDW)</li>
+              <li>Standard deposit: ₹15,000 excess</li>
+            </ul>
+          </div>
+
+          <div class="protection-plan-card ${protection === 'premium' ? 'active' : ''}" data-protection="premium">
+            <div class="protection-header">
+              <div>
+                <div class="protection-title">Full Peace of Mind</div>
+                <span class="badge badge-eco" style="font-size:0.7rem; padding:2px 6px;">Recommended</span>
+              </div>
+              <span class="protection-cost">+${formatCurrency(650, currency)} <span style="font-size:0.7rem; font-weight:500;">/day</span></span>
+            </div>
+            <ul class="protection-features-list">
+              <li><strong>Zero excess liability (₹0 excess)</strong></li>
+              <li>Tyres, glass, windscreen & underbody</li>
+              <li>24/7 emergency breakdown roadside assist</li>
+              <li>Lost key replacement coverage</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 class="modal-subheading">Optional Equipment & Add-ons</h3>
+        <div class="car-addons-list">
+          <label class="car-addon-row">
+            <div class="addon-label-group">
+              <input type="checkbox" class="car-addon-checkbox" data-addon="driver" ${selectedAddons.includes('driver') ? 'checked' : ''} />
+              <span>👤 Additional Driver</span>
+            </div>
+            <span class="addon-price-tag">+${formatCurrency(350, currency)} / day</span>
+          </label>
+          <label class="car-addon-row">
+            <div class="addon-label-group">
+              <input type="checkbox" class="car-addon-checkbox" data-addon="gps" ${selectedAddons.includes('gps') ? 'checked' : ''} />
+              <span>🛰️ GPS Navigation System</span>
+            </div>
+            <span class="addon-price-tag">+${formatCurrency(250, currency)} / day</span>
+          </label>
+          <label class="car-addon-row">
+            <div class="addon-label-group">
+              <input type="checkbox" class="car-addon-checkbox" data-addon="seat" ${selectedAddons.includes('seat') ? 'checked' : ''} />
+              <span>👶 Child Safety Booster Seat</span>
+            </div>
+            <span class="addon-price-tag">+${formatCurrency(300, currency)} / day</span>
+          </label>
+        </div>
+
+        <div class="booking-order-summary" style="margin-top:20px;">
+          <div class="summary-line">
+            <span>Base Car Rental (3 days x ${formatCurrency(car.dailyPriceINR, currency)}):</span>
+            <span>${formatCurrency(basePrice, currency)}</span>
+          </div>
+          ${protection === 'premium' ? `
+            <div class="summary-line">
+              <span>Full Peace of Mind Cover (3 days):</span>
+              <span>+${formatCurrency(protectionTotal, currency)}</span>
+            </div>
+          ` : ''}
+          ${addonsTotal > 0 ? `
+            <div class="summary-line">
+              <span>Selected Add-ons (3 days):</span>
+              <span>+${formatCurrency(addonsTotal, currency)}</span>
+            </div>
+          ` : ''}
+          <div class="summary-line total-line">
+            <strong>Estimated Total (3 days):</strong>
+            <strong class="text-primary">${formatCurrency(totalAmount, currency)}</strong>
+          </div>
+        </div>
+
+        <div class="form-actions-row">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('car-booking-modal').classList.remove('active')">Cancel</button>
+          <button type="button" class="btn btn-primary btn-lg" id="btn-to-driver-step">Continue to Driver Details ➔</button>
+        </div>
+      </div>
+    `;
+
+    // Protection card toggles
+    body.querySelectorAll('.protection-plan-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const pType = card.getAttribute('data-protection');
+        AppState.setState({ selectedCarProtection: pType });
+        renderCarModalStep();
+      });
+    });
+
+    // Addon checkboxes
+    body.querySelectorAll('.car-addon-checkbox').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const checkedList = Array.from(body.querySelectorAll('.car-addon-checkbox:checked')).map(c => c.getAttribute('data-addon'));
+        AppState.setState({ selectedCarAddons: checkedList });
+        renderCarModalStep();
+      });
+    });
+
+    // Continue to driver step
+    document.getElementById('btn-to-driver-step')?.addEventListener('click', () => {
+      AppState.setState({ carBookingStep: 'driver' });
+      renderCarModalStep();
+    });
+
+  } else if (step === 'driver') {
+    if (title) title.textContent = `Driver Information · ${car.name}`;
+    body.innerHTML = `
+      <div class="booking-step-view">
+        <div class="booking-progress-bar">
+          <div class="step completed">1. Protection & Extras</div>
+          <div class="step active">2. Driver Details</div>
+          <div class="step">3. Confirmation</div>
+        </div>
+
+        <div class="booking-flight-summary-card" style="margin-bottom: 18px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <strong style="color:var(--sk-blue-primary); font-size:1rem;">${car.name} (${car.supplier})</strong>
+            <span style="font-size:0.85rem; color:var(--sk-text-secondary);">📍 Pick-up: ${carParams.location || 'Goa Dabolim Airport (GOI)'} · 3 days rental · Unlimited mileage</span>
+          </div>
+          <span class="badge badge-eco">✓ Free cancellation</span>
+        </div>
+
+        <div class="passenger-form-container">
+          <h3>Lead Driver Details</h3>
+          <p class="form-hint">Driver must present a valid physical driving license and credit/debit card in their name at counter pickup.</p>
+
+          <form id="car-driver-booking-form">
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label>First & Middle Name *</label>
+                <input type="text" class="sk-input" id="c-firstname" required placeholder="e.g. Himanshu" value="Himanshu" />
+              </div>
+              <div class="form-group">
+                <label>Last / Surname *</label>
+                <input type="text" class="sk-input" id="c-lastname" required placeholder="e.g. Sharma" value="Sharma" />
+              </div>
+            </div>
+
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" class="sk-input" id="c-email" required placeholder="name@example.com" value="driver@example.com" />
+              </div>
+              <div class="form-group">
+                <label>Mobile Number *</label>
+                <input type="tel" class="sk-input" id="c-phone" required placeholder="+91 98765 43210" value="+91 98765 43210" />
+              </div>
+            </div>
+
+            <div class="form-row two-col">
+              <div class="form-group">
+                <label>Driving License Number *</label>
+                <input type="text" class="sk-input" id="c-license" required placeholder="DL-0420110023456" value="DL-0420180098765" />
+              </div>
+              <div class="form-group">
+                <label>Flight Number (Optional for delay tracking)</label>
+                <input type="text" class="sk-input" id="c-flightno" placeholder="e.g. 6E-204" value="6E-204" />
+              </div>
+            </div>
+
+            <div class="booking-order-summary">
+              <div class="summary-line">
+                <span>Vehicle (${car.name}):</span>
+                <span>${formatCurrency(basePrice, currency)}</span>
+              </div>
+              <div class="summary-line">
+                <span>Protection:</span>
+                <span>${protection === 'premium' ? `Full Zero-Excess (${formatCurrency(protectionTotal, currency)})` : 'Basic Standard (Included)'}</span>
+              </div>
+              ${addonsTotal > 0 ? `
+                <div class="summary-line">
+                  <span>Add-ons:</span>
+                  <span>+${formatCurrency(addonsTotal, currency)}</span>
+                </div>
+              ` : ''}
+              <div class="summary-line total-line">
+                <strong>Total Payable Amount:</strong>
+                <strong class="text-primary">${formatCurrency(totalAmount, currency)}</strong>
+              </div>
+            </div>
+
+            <div class="form-actions-row">
+              <button type="button" class="btn btn-secondary" id="btn-back-to-car-protection">Back to Options</button>
+              <button type="submit" class="btn btn-primary btn-lg">Confirm & Reserve Vehicle ➔</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-back-to-car-protection')?.addEventListener('click', () => {
+      AppState.setState({ carBookingStep: 'protection' });
+      renderCarModalStep();
+    });
+
+    document.getElementById('car-driver-booking-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const driverName = `${document.getElementById('c-firstname').value} ${document.getElementById('c-lastname').value}`;
+      const email = document.getElementById('c-email').value;
+      const license = document.getElementById('c-license').value;
+      const flightNo = document.getElementById('c-flightno').value;
+      const ref = `CAR-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      const booking = {
+        ref,
+        car,
+        driverName,
+        email,
+        license,
+        flightNo,
+        pickupLocation: carParams.location || 'Goa Dabolim Airport (GOI) Terminal Counter',
+        pickupDate: carParams.pickupDate || '11-10-2026',
+        dropoffDate: carParams.dropoffDate || '14-10-2026',
+        rentalDays,
+        protection,
+        totalPrice: totalAmount,
+        bookingDate: new Date().toLocaleDateString('en-GB')
+      };
+
+      AppState.setState({
+        carBookingStep: 'confirmed',
+        latestCarBooking: booking
+      });
+      renderCarModalStep();
+    });
+
+  } else if (step === 'confirmed') {
+    if (title) title.textContent = `Car Rental Confirmed · ${car.name}`;
+    const booking = state.latestCarBooking;
+    if (!booking) return;
+
+    body.innerHTML = `
+      <div class="booking-step-view confirmed-view">
+        <div class="booking-success-header">
+          <div class="success-checkmark">✓</div>
+          <h2>Car Hire Reservation Confirmed!</h2>
+          <p>Your vehicle is reserved with <strong>${car.supplier}</strong>. Rental agreement voucher sent to <strong>${booking.email}</strong>.</p>
+        </div>
+
+        <div class="e-ticket-card">
+          <div class="ticket-header">
+            <div class="ticket-airline">
+              <span class="badge-mini" style="background:#FF5452;">🚗</span>
+              <strong>${car.name} (${car.supplier})</strong>
+            </div>
+            <div class="ticket-pnr">
+              <span class="pnr-label">RENTAL AGREEMENT REF</span>
+              <span class="pnr-code">${booking.ref}</span>
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="voucher-details-grid">
+              <div class="t-col">
+                <span class="t-label">LEAD DRIVER</span>
+                <span class="t-val">${booking.driverName}</span>
+              </div>
+              <div class="t-col">
+                <span class="t-label">LICENSE NO.</span>
+                <span class="t-val">${booking.license}</span>
+              </div>
+              <div class="t-col">
+                <span class="t-label">RENTAL PERIOD</span>
+                <span class="t-val">${booking.rentalDays} Days · ${car.category}</span>
+              </div>
+            </div>
+
+            <div class="ticket-flight-path" style="background:#F4FAF9; border:1px solid #C2EAE5;">
+              <div class="tf-point">
+                <span class="tf-city">PICK-UP</span>
+                <span class="tf-code" style="font-size:1.1rem; color:var(--sk-navy-main);">${booking.pickupDate}</span>
+                <span class="tf-time">10:00 AM</span>
+              </div>
+              <div class="tf-connector" style="color:var(--sk-green-eco); font-weight:700;">
+                <span>🚗 3 DAYS RENTAL</span>
+              </div>
+              <div class="tf-point">
+                <span class="tf-city">RETURN</span>
+                <span class="tf-code" style="font-size:1.1rem; color:var(--sk-navy-main);">${booking.dropoffDate}</span>
+                <span class="tf-time">10:00 AM</span>
+              </div>
+            </div>
+
+            <div class="ticket-footer-row">
+              <div class="qr-mock">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="#05203C">
+                  <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h3v2h-3v-2zm-5 0h2v3h-2v-3zm3 3h2v3h-2v-3zm-3 2h2v2h-2v-2zm5 0h3v2h-3v-2z"/>
+                </svg>
+                <span>SCAN AT RENTAL DESK</span>
+              </div>
+              <div class="gate-info">
+                <span>📍 ${booking.pickupLocation}</span>
+                <span class="booked-with">Full-to-Full Fuel Policy · Total: ${formatCurrency(booking.totalPrice, currency)}</span>
+                <span style="font-size:0.75rem; color:#137333; font-weight:600;">✓ Unlimited mileage included · Free cancellation up to 48h</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Rental Voucher</button>
+          <button class="btn btn-primary" id="btn-done-car-booking">Done & Back to Cars</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-done-car-booking')?.addEventListener('click', () => {
+      closeCarModal();
+    });
+  }
+}
+
 
 // Render "Explore Everywhere" Popular Destinations Grid with Live Weather
 export async function renderExploreDestinations() {

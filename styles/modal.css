@@ -601,3 +601,337 @@
   padding-top: 14px;
   border-top: 1px solid var(--sk-border-subtle);
 }
+
+/* ========================================================
+   HOTEL SELECTION & BOOKING MODAL STYLES
+   ======================================================== */
+.hotel-summary-modal-card {
+  background: #F8F9FC;
+  border: 1.5px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.hotel-modal-thumb {
+  width: 90px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.hotel-modal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-grow: 1;
+}
+
+.hotel-modal-meta h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sk-text-primary);
+  margin: 0;
+}
+
+.hotel-modal-stars {
+  color: #FFB300;
+  font-size: 0.85rem;
+}
+
+.hotel-modal-location {
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+}
+
+.hotel-stay-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--sk-text-secondary);
+  background: #fff;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--sk-border-subtle);
+  width: fit-content;
+  margin-top: 2px;
+}
+
+/* Room Options Cards */
+.room-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.room-option-card {
+  background: #fff;
+  border: 1.5px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all var(--transition-fast);
+}
+
+.room-option-card:hover {
+  border-color: #CBD2DF;
+  box-shadow: var(--shadow-sm);
+}
+
+.room-option-card.featured-room {
+  border-color: var(--sk-green-eco);
+  background: #FAFCFB;
+}
+
+.room-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-title-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.room-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sk-text-primary);
+}
+
+.room-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.room-badge.bestseller {
+  background: #E6F4EA;
+  color: #137333;
+}
+
+.room-badge.luxury {
+  background: #FFF8E1;
+  color: #B78103;
+}
+
+.room-badge.saver {
+  background: #E8F2FC;
+  color: var(--sk-blue-primary);
+}
+
+.room-provider-tag {
+  font-size: 0.78rem;
+  color: var(--sk-text-secondary);
+  font-weight: 500;
+}
+
+.room-features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.room-feature-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #F1F4F9;
+  font-size: 0.78rem;
+  color: var(--sk-text-secondary);
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.room-bottom-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--sk-border-subtle);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.room-price-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.room-price-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--sk-text-primary);
+  line-height: 1.1;
+}
+
+.room-price-sub {
+  font-size: 0.75rem;
+  color: var(--sk-text-muted);
+}
+
+/* ========================================================
+   CAR HIRE SELECTION & BOOKING MODAL STYLES
+   ======================================================== */
+.car-summary-modal-card {
+  background: #F8F9FC;
+  border: 1.5px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.car-modal-thumb {
+  width: 95px;
+  height: 65px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  flex-shrink: 0;
+  border: 1px solid var(--sk-border-subtle);
+}
+
+.car-modal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-grow: 1;
+}
+
+.car-modal-meta h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.car-modal-specs {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+}
+
+.protection-plans-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 14px 0 20px;
+}
+
+.protection-plan-card {
+  border: 2px solid var(--sk-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.protection-plan-card:hover {
+  border-color: #CBD2DF;
+}
+
+.protection-plan-card.active {
+  border-color: var(--sk-blue-primary);
+  background: #FAFCFF;
+  box-shadow: 0 0 0 1px var(--sk-blue-primary);
+}
+
+.protection-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.protection-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.protection-cost {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--sk-blue-primary);
+}
+
+.protection-features-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--sk-text-secondary);
+}
+
+.protection-features-list li::before {
+  content: "✓ ";
+  color: var(--sk-green-eco);
+  font-weight: 700;
+}
+
+/* Optional Addons List */
+.car-addons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.car-addon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1px solid var(--sk-border-subtle);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.car-addon-row:hover {
+  background: #F8F9FC;
+}
+
+.addon-label-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.addon-price-tag {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sk-text-primary);
+}
+
+/* Voucher Details Grid */
+.voucher-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}

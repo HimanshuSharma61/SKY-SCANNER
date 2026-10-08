@@ -754,6 +754,42 @@
     gap: 8px;
   }
 
+  /* Hotel & Car modal responsive */
+  .hotel-summary-modal-card,
+  .car-summary-modal-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .hotel-modal-thumb,
+  .car-modal-thumb {
+    width: 100%;
+    height: 140px;
+  }
+
+  .protection-plans-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .voucher-details-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .room-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .room-bottom-cta-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   /* Search Loading Screen Overlay */
   .loading-screen-card {
     padding: 24px 16px 20px;

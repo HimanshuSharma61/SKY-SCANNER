@@ -13,6 +13,8 @@ import {
   openCurrencyModal,
   openApiSettingsModal,
   closeBookingModal,
+  closeHotelModal,
+  closeCarModal,
   resetAllFilters,
   updateCurrencyDisplays,
   updateSavedCountBadge,
@@ -388,6 +390,31 @@ function setupModals() {
 
   // Booking Modal Close
   document.getElementById('btn-close-booking-modal')?.addEventListener('click', closeBookingModal);
+
+  // Hotel Booking Modal Close
+  document.getElementById('btn-close-hotel-modal')?.addEventListener('click', closeHotelModal);
+
+  // Car Booking Modal Close
+  document.getElementById('btn-close-car-modal')?.addEventListener('click', closeCarModal);
+
+  // Footer API link
+  document.getElementById('footer-api-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openApiSettingsModal();
+  });
+
+  // Footer Hotels and Cars links
+  document.getElementById('footer-hotels-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('.sk-nav-tab[data-tab="hotels"]')?.click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('footer-cars-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('.sk-nav-tab[data-tab="cars"]')?.click();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   // Saved Trips Modal
   document.getElementById('btn-saved-trips')?.addEventListener('click', () => {
