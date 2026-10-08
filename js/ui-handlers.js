@@ -365,6 +365,8 @@ export function renderFlightResults() {
       }
     });
   });
+
+  updateActiveFiltersBadge();
 }
 
 // Open Booking & Deal Modal
@@ -665,6 +667,28 @@ export function resetAllFilters() {
   if (priceDisplay) priceDisplay.textContent = formatCurrency(100000, AppState.getState().currency);
 
   renderFlightResults();
+  updateActiveFiltersBadge();
+}
+
+// Update the active filters count badge for mobile
+export function updateActiveFiltersBadge() {
+  const badge = document.getElementById('active-filter-badge');
+  if (!badge) return;
+
+  const { flightFilters } = AppState.getState();
+  let count = 0;
+  if (flightFilters.stops && flightFilters.stops !== 'all') count++;
+  if (flightFilters.timeSlots && flightFilters.timeSlots.length > 0) count += flightFilters.timeSlots.length;
+  if (flightFilters.airlines && flightFilters.airlines.length > 0) count += flightFilters.airlines.length;
+  if (flightFilters.maxPriceINR && flightFilters.maxPriceINR < 100000) count++;
+  if (flightFilters.greenerOnly) count++;
+
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 // Update the Saved Trips count in navbar

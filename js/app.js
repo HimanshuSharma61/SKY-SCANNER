@@ -16,7 +16,8 @@ import {
   resetAllFilters,
   updateCurrencyDisplays,
   updateSavedCountBadge,
-  renderFlightResults
+  renderFlightResults,
+  updateActiveFiltersBadge
 } from './ui-handlers.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -129,8 +130,16 @@ function setupMainNavigationTabs() {
     tab.addEventListener('click', (e) => {
       e.preventDefault();
       const target = tab.getAttribute('data-tab');
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+      // Synchronize both desktop & mobile category tabs
+      document.querySelectorAll('.sk-nav-tab').forEach(t => {
+        if (t.getAttribute('data-tab') === target) {
+          t.classList.add('active');
+          t.setAttribute('aria-selected', 'true');
+        } else {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        }
+      });
 
       AppState.setState({ currentTab: target });
 
@@ -210,21 +219,31 @@ function setupSwapAirportsButton() {
 function setupTravellersPopover() {
   const trigger = document.getElementById('travellers-trigger');
   const popover = document.getElementById('travellers-popover');
+  const backdrop = document.getElementById('travellers-backdrop');
   const doneBtn = document.getElementById('btn-done-travellers');
   if (!trigger || !popover) return;
 
+  function closeTravellers() {
+    popover.classList.remove('active');
+    backdrop?.classList.remove('active');
+  }
+
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
-    popover.classList.toggle('active');
+    const isActive = popover.classList.toggle('active');
+    if (isActive) {
+      backdrop?.classList.add('active');
+    } else {
+      backdrop?.classList.remove('active');
+    }
   });
 
-  doneBtn?.addEventListener('click', () => {
-    popover.classList.remove('active');
-  });
+  doneBtn?.addEventListener('click', closeTravellers);
+  backdrop?.addEventListener('click', closeTravellers);
 
   document.addEventListener('click', (e) => {
     if (!popover.contains(e.target) && !trigger.contains(e.target)) {
-      popover.classList.remove('active');
+      closeTravellers();
     }
   });
 
@@ -329,6 +348,32 @@ function setupFiltersListeners() {
 
   // Clear filters button
   document.getElementById('btn-clear-filters')?.addEventListener('click', resetAllFilters);
+
+  // Mobile Filter Drawer controls
+  const mobileFilterBtn = document.getElementById('btn-mobile-filters');
+  const closeFilterBtn = document.getElementById('btn-close-filters-mobile');
+  const applyFilterBtn = document.getElementById('btn-apply-filters-mobile');
+  const filterBackdrop = document.getElementById('filters-backdrop');
+  const sidebar = document.getElementById('filters-sidebar');
+
+  function openFilterDrawer() {
+    sidebar?.classList.add('drawer-active');
+    filterBackdrop?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilterDrawer() {
+    sidebar?.classList.remove('drawer-active');
+    filterBackdrop?.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  mobileFilterBtn?.addEventListener('click', openFilterDrawer);
+  closeFilterBtn?.addEventListener('click', closeFilterDrawer);
+  applyFilterBtn?.addEventListener('click', closeFilterDrawer);
+  filterBackdrop?.addEventListener('click', closeFilterDrawer);
+
+  updateActiveFiltersBadge();
 }
 
 function setupModals() {

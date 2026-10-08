@@ -148,3 +148,39 @@
   background-color: #fff;
   color: var(--sk-navy-main);
 }
+
+.api-btn-icon, .nav-login-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* Mobile Category Navigation Subbar */
+.navbar-mobile-subbar {
+  display: none;
+  background-color: var(--sk-navy-deep);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 8px 0;
+  width: 100%;
+}
+
+.mobile-tabs-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  list-style: none;
+  padding: 0 4px;
+  gap: 8px;
+  width: 100%;
+}
+
+.mobile-tabs-list li {
+  flex: 1;
+}
+
+.mobile-tabs-list .sk-nav-tab {
+  justify-content: center;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  border-radius: var(--radius-full);
+}
