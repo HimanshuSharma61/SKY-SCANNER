@@ -420,6 +420,17 @@ function setupModals() {
     openApiSettingsModal();
   });
 
+  // Top Nav Support & Promo Ribbon Info
+  document.getElementById('btn-nav-support')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openInfoModal('help-support');
+  });
+
+  document.getElementById('promo-ribbon-info')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openInfoModal('terms-of-service');
+  });
+
   // Saved Trips Modal
   document.getElementById('btn-saved-trips')?.addEventListener('click', () => {
     const savedIds = AppState.getState().savedFlightIds;
