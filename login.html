@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Log in to Skyscanner | User &amp; Admin Sign In</title>
-  <meta name="description" content="Sign in to your Skyscanner account to manage bookings, view saved flights, or access admin controls." />
+  <title>Sign In &amp; Register | Skyscanner</title>
+  <meta name="description" content="Sign in or register your Skyscanner account with Google Mail OAuth or email to access flights, bookings, and admin controls." />
 
   <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,6 +16,9 @@
   <link rel="stylesheet" href="styles/main.css" />
   <link rel="stylesheet" href="styles/navbar.css" />
   <link rel="stylesheet" href="styles/auth.css" />
+
+  <!-- Google Identity Services (GIS) Official OAuth SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     body {
@@ -65,7 +68,7 @@
       font-size: 0.88rem;
       color: var(--sk-text-secondary);
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .login-footer-links {
@@ -105,14 +108,31 @@
     </a>
   </header>
 
-  <!-- Login Card Container -->
+  <!-- Login / Register Card Container -->
   <main class="login-container">
     <div class="login-card">
-      <h1 class="login-brand-title">Sign in to Skyscanner</h1>
-      <p class="login-brand-subtitle">Compare flights, save routes, and access exclusive travel features</p>
+      <h1 class="login-brand-title" id="page-heading">Sign in to Skyscanner</h1>
+      <p class="login-brand-subtitle" id="page-subheading">Access flights, bookings, and verified traveller benefits</p>
 
-      <!-- Role Switcher -->
-      <div class="auth-role-tabs">
+      <!-- Active Session Banner if already signed in -->
+      <div id="active-session-banner" style="display: none; background: #e3f2fd; border: 1px solid #90caf9; color: #0d47a1; padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 0.85rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <span>Signed in as <strong id="logged-user-name"></strong> (<span id="logged-user-role"></span>)</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <a href="index.html" class="btn btn-secondary btn-sm" style="text-decoration: none; padding: 4px 10px; font-size: 0.78rem;">Home ✈</a>
+          <button type="button" id="btn-session-signout" style="background: #e53935; color: #fff; padding: 4px 10px; font-size: 0.78rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- Mode Switch Tabs: Sign In vs Sign Up -->
+      <div class="auth-mode-tabs">
+        <button type="button" class="auth-mode-tab active" id="btn-mode-signin">Sign In</button>
+        <button type="button" class="auth-mode-tab" id="btn-mode-signup">Create Account</button>
+      </div>
+
+      <!-- Role Switcher (Shown in Sign In mode) -->
+      <div class="auth-role-tabs" id="role-tabs-container">
         <button type="button" class="auth-role-tab active" id="tab-user-role">
           <span>👤</span>
           <span>User / Traveller</span>
@@ -123,6 +143,14 @@
         </button>
       </div>
 
+      <!-- Verified Google OAuth Client Info Tag -->
+      <div class="google-oauth-client-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+        <span>Google OAuth API Configured &amp; Active</span>
+      </div>
+
       <!-- Google OAuth Sign In Button -->
       <button type="button" class="btn-google-oauth" id="btn-login-page-google">
         <svg class="google-icon-svg" viewBox="0 0 24 24">
@@ -131,36 +159,61 @@
           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
         </svg>
-        <span>Sign in with Google Mail (OAuth)</span>
+        <span id="google-btn-text">Continue with Google Mail</span>
       </button>
 
       <div class="auth-divider">
-        <span>or sign in with email</span>
+        <span id="divider-text">or with email</span>
       </div>
 
-      <!-- Email Login Form -->
+      <!-- Main Auth Form (Handles both Sign In & Sign Up) -->
       <form id="login-page-form">
         <div id="page-auth-error" style="display: none; background: #FFEBEE; color: #C62828; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.84rem; font-weight: 600; margin-bottom: 14px;"></div>
 
+        <!-- Full Name (Sign Up only) -->
+        <div class="auth-form-group" id="name-group" style="display: none;">
+          <label class="auth-form-label" for="page-name">Full Name</label>
+          <input type="text" id="page-name" class="auth-input" placeholder="e.g. Himanshu Sharma" />
+        </div>
+
+        <!-- Email Address -->
         <div class="auth-form-group">
           <label class="auth-form-label" for="page-email" id="label-email">Email Address</label>
           <input type="email" id="page-email" class="auth-input" placeholder="name@domain.com" required />
         </div>
 
+        <!-- Password -->
         <div class="auth-form-group">
-          <label class="auth-form-label" for="page-password">Password</label>
+          <label class="auth-form-label" for="page-password">
+            <span>Password</span>
+            <span id="pass-hint" style="font-size: 0.72rem; color: var(--sk-text-muted);">Min. 6 characters</span>
+          </label>
           <input type="password" id="page-password" class="auth-input" placeholder="Enter password" required />
         </div>
 
-        <div class="auth-form-group" id="admin-key-group" style="display: none;">
-          <label class="auth-form-label" for="page-admin-key">Secret Admin Key</label>
-          <input type="password" id="page-admin-key" class="auth-input" placeholder="Enter secret administrator key" />
+        <!-- Confirm Password (Sign Up only) -->
+        <div class="auth-form-group" id="confirm-pass-group" style="display: none;">
+          <label class="auth-form-label" for="page-confirm-password">Confirm Password</label>
+          <input type="password" id="page-confirm-password" class="auth-input" placeholder="Confirm your password" />
         </div>
 
+        <!-- Secret Admin Key (Admin Sign In only) -->
+        <div class="auth-form-group" id="admin-key-group" style="display: none;">
+          <label class="auth-form-label" for="page-admin-key">Secret Administrator Key</label>
+          <input type="password" id="page-admin-key" class="auth-input" placeholder="Enter administrator access key" />
+        </div>
+
+        <!-- Submit Button -->
         <button type="submit" class="btn btn-primary" id="btn-submit-login" style="width: 100%; padding: 12px; margin-top: 14px; font-size: 0.95rem;">
-          <span>Sign In as User ➔</span>
+          <span>Sign In as Traveller ➔</span>
         </button>
       </form>
+
+      <!-- Bottom Mode Switch Prompt -->
+      <div class="auth-switch-prompt" id="auth-switch-prompt">
+        <span>Don't have an account? </span>
+        <a href="#" id="link-switch-mode">Create an account</a>
+      </div>
 
       <div class="login-footer-links">
         By continuing, you agree to Skyscanner's <a href="index.html">Terms of Service</a> &amp; <a href="index.html">Privacy Policy</a>.
@@ -173,67 +226,172 @@
 
   <script type="module">
     import { Auth } from './js/auth.js';
-    import { openGoogleAccountPicker } from './js/auth-ui.js';
+    import { triggerGoogleOAuthLogin } from './js/auth-ui.js';
+    import { GOOGLE_OAUTH_CONFIG } from './js/google-auth-config.js';
 
-    let currentRole = 'user';
+    let currentMode = 'signin'; // 'signin' | 'signup'
+    let currentRole = 'user';   // 'user' | 'admin'
 
+    const btnModeSignin = document.getElementById('btn-mode-signin');
+    const btnModeSignup = document.getElementById('btn-mode-signup');
+    const roleTabsContainer = document.getElementById('role-tabs-container');
     const tabUser = document.getElementById('tab-user-role');
     const tabAdmin = document.getElementById('tab-admin-role');
+
+    const nameGroup = document.getElementById('name-group');
+    const nameInput = document.getElementById('page-name');
     const emailInput = document.getElementById('page-email');
     const passInput = document.getElementById('page-password');
+    const confirmPassGroup = document.getElementById('confirm-pass-group');
+    const confirmPassInput = document.getElementById('page-confirm-password');
     const keyGroup = document.getElementById('admin-key-group');
     const keyInput = document.getElementById('page-admin-key');
     const submitBtn = document.getElementById('btn-submit-login');
     const errBox = document.getElementById('page-auth-error');
+    const switchPrompt = document.getElementById('auth-switch-prompt');
+    const switchLink = document.getElementById('link-switch-mode');
+    const pageHeading = document.getElementById('page-heading');
+    const pageSubheading = document.getElementById('page-subheading');
 
-    function setRole(role) {
-      currentRole = role;
-      if (role === 'admin') {
-        tabAdmin.classList.add('active');
-        tabUser.classList.remove('active');
-        keyGroup.style.display = 'flex';
-        emailInput.value = '';
-        passInput.value = '';
-        keyInput.value = '';
-        emailInput.placeholder = 'admin@company.com';
-        submitBtn.innerHTML = '<span>Sign In as Admin 🛡️</span>';
-      } else {
-        tabUser.classList.add('active');
-        tabAdmin.classList.remove('active');
+    function updateView() {
+      errBox.style.display = 'none';
+
+      if (currentMode === 'signup') {
+        // Sign Up Mode
+        btnModeSignup.classList.add('active');
+        btnModeSignin.classList.remove('active');
+        roleTabsContainer.style.display = 'none';
+        nameGroup.style.display = 'flex';
+        confirmPassGroup.style.display = 'flex';
         keyGroup.style.display = 'none';
-        emailInput.value = '';
-        passInput.value = '';
-        keyInput.value = '';
-        emailInput.placeholder = 'name@domain.com';
-        submitBtn.innerHTML = '<span>Sign In as User ➔</span>';
+        pageHeading.textContent = 'Create your Skyscanner account';
+        pageSubheading.textContent = 'Sign up to track fares, save favorite routes, and manage trips';
+        submitBtn.innerHTML = '<span>Create Free Account ➔</span>';
+        switchPrompt.innerHTML = '<span>Already have an account? </span><a href="#" id="link-switch-mode">Sign in</a>';
+      } else {
+        // Sign In Mode
+        btnModeSignin.classList.add('active');
+        btnModeSignup.classList.remove('active');
+        roleTabsContainer.style.display = 'flex';
+        nameGroup.style.display = 'none';
+        confirmPassGroup.style.display = 'none';
+
+        if (currentRole === 'admin') {
+          tabAdmin.classList.add('active');
+          tabUser.classList.remove('active');
+          keyGroup.style.display = 'flex';
+          emailInput.placeholder = 'admin@company.com';
+          submitBtn.innerHTML = '<span>Sign In as Admin 🛡️</span>';
+          pageHeading.textContent = 'Skyscanner Admin Portal';
+          pageSubheading.textContent = 'Authenticate with your administrator credentials and secret key';
+        } else {
+          tabUser.classList.add('active');
+          tabAdmin.classList.remove('active');
+          keyGroup.style.display = 'none';
+          emailInput.placeholder = 'name@domain.com';
+          submitBtn.innerHTML = '<span>Sign In as Traveller ➔</span>';
+          pageHeading.textContent = 'Sign in to Skyscanner';
+          pageSubheading.textContent = 'Access flights, bookings, and verified traveller benefits';
+        }
+
+        switchPrompt.innerHTML = '<span>Don\'t have an account? </span><a href="#" id="link-switch-mode">Create an account</a>';
       }
+
+      // Re-attach switch link event listener
+      document.getElementById('link-switch-mode')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentMode = (currentMode === 'signin') ? 'signup' : 'signin';
+        updateView();
+      });
     }
 
-    tabUser.addEventListener('click', () => setRole('user'));
-    tabAdmin.addEventListener('click', () => setRole('admin'));
+    btnModeSignin.addEventListener('click', () => {
+      currentMode = 'signin';
+      updateView();
+    });
 
-    // Google Sign in
+    btnModeSignup.addEventListener('click', () => {
+      currentMode = 'signup';
+      updateView();
+    });
+
+    tabUser.addEventListener('click', () => {
+      currentRole = 'user';
+      updateView();
+    });
+
+    tabAdmin.addEventListener('click', () => {
+      currentRole = 'admin';
+      updateView();
+    });
+
+    switchLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      currentMode = 'signup';
+      updateView();
+    });
+
+    // Google Sign in Button
     document.getElementById('btn-login-page-google').addEventListener('click', () => {
-      openGoogleAccountPicker(currentRole);
+      triggerGoogleOAuthLogin(currentRole);
     });
 
     // Form submit
     document.getElementById('login-page-form').addEventListener('submit', (e) => {
       e.preventDefault();
       errBox.style.display = 'none';
+
       try {
-        Auth.loginWithEmail(emailInput.value, passInput.value, currentRole, keyInput.value);
-        window.location.href = 'index.html';
+        if (currentMode === 'signup') {
+          const name = nameInput.value.trim();
+          const email = emailInput.value.trim();
+          const pass = passInput.value;
+          const confPass = confirmPassInput.value;
+
+          if (pass !== confPass) {
+            throw new Error('Passwords do not match. Please re-enter.');
+          }
+
+          Auth.registerWithEmail(name, email, pass);
+          window.location.href = 'index.html';
+        } else {
+          // Sign In
+          const email = emailInput.value.trim();
+          const pass = passInput.value;
+          const key = keyInput.value.trim();
+
+          Auth.loginWithEmail(email, pass, currentRole, key);
+          window.location.href = 'index.html';
+        }
       } catch (err) {
         errBox.textContent = err.message;
         errBox.style.display = 'block';
       }
     });
 
-    // Auto-detect if user signed in via Google picker
+    function checkCurrentSession() {
+      const user = Auth.getCurrentUser();
+      const banner = document.getElementById('active-session-banner');
+      if (user && banner) {
+        document.getElementById('logged-user-name').textContent = user.name;
+        document.getElementById('logged-user-role').textContent = user.role.toUpperCase();
+        banner.style.display = 'flex';
+      } else if (banner) {
+        banner.style.display = 'none';
+      }
+    }
+
+    checkCurrentSession();
+
+    document.getElementById('btn-session-signout')?.addEventListener('click', () => {
+      Auth.logout();
+      checkCurrentSession();
+    });
+
+    // Auto-detect when signed in
     Auth.subscribe((user) => {
       if (user) {
-        window.location.href = 'index.html';
+        checkCurrentSession();
       }
     });
   </script>

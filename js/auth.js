@@ -146,6 +146,35 @@ class AuthService {
     return this.setUserSession(newUser);
   }
 
+  // Register New Account
+  registerWithEmail(name, email, password) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = name.trim();
+
+    if (!cleanName || cleanName.length < 2) {
+      throw new Error('Please enter your full name (at least 2 characters).');
+    }
+
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      throw new Error('Please provide a valid email address.');
+    }
+
+    if (!password || password.length < 6) {
+      throw new Error('Password must be at least 6 characters for security.');
+    }
+
+    const newUser = {
+      email: cleanEmail,
+      name: cleanName,
+      role: 'user',
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanName)}&backgroundColor=0770E3`,
+      provider: 'email-registration'
+    };
+
+    this.logAudit('USER_REGISTERED', { email: cleanEmail, name: cleanName });
+    return this.setUserSession(newUser);
+  }
+
   // Google OAuth Login Integration
   loginWithGoogle(googleProfile = null, targetRole = 'user') {
     const role = targetRole === 'admin' ? 'admin' : 'user';
