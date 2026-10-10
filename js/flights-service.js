@@ -364,24 +364,36 @@ async function fetchAviationStackFlights({ apiKey, origin, dest, departDate, ret
     }
   }
 
+  const localProxy = `/api/aviationstack?access_key=${encodeURIComponent(cleanKey)}&dep_iata=${encodeURIComponent(origin.code)}&arr_iata=${encodeURIComponent(dest.code)}&limit=15`;
   const endpoint = `http://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(cleanKey)}&dep_iata=${encodeURIComponent(origin.code)}&arr_iata=${encodeURIComponent(dest.code)}&limit=15`;
   
   let json = null;
+  // 1. Try local server proxy first
   try {
-    const res = await fetch(endpoint);
+    const res = await fetch(localProxy);
     if (res.ok) {
       json = await res.json();
     }
-  } catch (err) {
-    // If running in HTTPS or blocked by mixed content, attempt CORS proxy
+  } catch {}
+
+  // 2. Fallback to direct AviationStack endpoint
+  if (!json || json.error) {
     try {
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`;
-      const res = await fetch(proxyUrl);
+      const res = await fetch(endpoint);
       if (res.ok) {
         json = await res.json();
       }
-    } catch (proxyErr) {
-      console.warn('[AviationStack] Proxy request failed:', proxyErr);
+    } catch (err) {
+      // 3. Fallback via CORS proxy if running under HTTPS
+      try {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`;
+        const res = await fetch(proxyUrl);
+        if (res.ok) {
+          json = await res.json();
+        }
+      } catch (proxyErr) {
+        console.warn('[AviationStack] Proxy request failed:', proxyErr);
+      }
     }
   }
 

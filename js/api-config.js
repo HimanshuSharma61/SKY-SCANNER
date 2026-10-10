@@ -21,7 +21,7 @@ export const DEFAULT_API_CONFIG = {
   // Signup: https://aviationstack.com/signup/free
   aviationStack: {
     enabled: true,
-    apiKey: '607f188b2a9ddaaf01b59e4753888b85',
+    apiKey: 'eaa8e2747dc1d145d534c593879a138b',
     signupUrl: 'https://aviationstack.com/signup/free',
     name: 'AviationStack Live Flights',
     description: 'Real-time flight statuses, route tracking & airport schedules'
@@ -67,13 +67,14 @@ export function getApiConfig() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Ensure AviationStack API key from defaults is set if missing or empty
-      if (!parsed.aviationStack || !parsed.aviationStack.apiKey) {
+      // Ensure AviationStack API key is updated to the newly integrated key if missing, empty, or previous key
+      if (!parsed.aviationStack || !parsed.aviationStack.apiKey || parsed.aviationStack.apiKey === '607f188b2a9ddaaf01b59e4753888b85') {
         parsed.aviationStack = {
           ...DEFAULT_API_CONFIG.aviationStack,
           apiKey: DEFAULT_API_CONFIG.aviationStack.apiKey,
           enabled: true
         };
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...DEFAULT_API_CONFIG, ...parsed })); } catch {}
       }
       return { ...DEFAULT_API_CONFIG, ...parsed };
     }
@@ -126,14 +127,21 @@ export async function testAmadeusConnection(clientId, clientSecret) {
 export async function testAviationStackConnection(apiKey) {
   if (!apiKey) return { success: false, message: 'Please enter an AviationStack API Key' };
   try {
-    const endpoint = `http://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(apiKey.trim())}&limit=1`;
+    const cleanKey = apiKey.trim();
+    const localProxy = `/api/aviationstack?access_key=${encodeURIComponent(cleanKey)}&limit=1`;
+    const endpoint = `http://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(cleanKey)}&limit=1`;
     let res = null;
     try {
-      res = await fetch(endpoint);
-    } catch {
-      // Fallback via CORS proxy if running under HTTPS
-      const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`;
-      res = await fetch(proxy);
+      res = await fetch(localProxy);
+    } catch {}
+    if (!res || !res.ok) {
+      try {
+        res = await fetch(endpoint);
+      } catch {
+        // Fallback via CORS proxy if running under HTTPS
+        const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`;
+        res = await fetch(proxy);
+      }
     }
 
     if (res && res.ok) {

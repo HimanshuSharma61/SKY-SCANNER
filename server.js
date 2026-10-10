@@ -23,6 +23,31 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
+  // AviationStack Live Proxy Route
+  if (req.url.startsWith('/api/aviationstack')) {
+    const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const depIata = urlObj.searchParams.get('dep_iata') || '';
+    const arrIata = urlObj.searchParams.get('arr_iata') || '';
+    const limit = urlObj.searchParams.get('limit') || '15';
+    const key = urlObj.searchParams.get('access_key') || 'eaa8e2747dc1d145d534c593879a138b';
+
+    let target = `http://api.aviationstack.com/v1/flights?access_key=${encodeURIComponent(key)}&limit=${limit}`;
+    if (depIata) target += `&dep_iata=${encodeURIComponent(depIata)}`;
+    if (arrIata) target += `&arr_iata=${encodeURIComponent(arrIata)}`;
+
+    http.get(target, (apiRes) => {
+      res.writeHead(apiRes.statusCode, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Access-Control-Allow-Origin': '*'
+      });
+      apiRes.pipe(res);
+    }).on('error', (err) => {
+      res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify({ error: { message: err.message } }));
+    });
+    return;
+  }
+
   let safeUrl = decodeURI(req.url.split('?')[0]);
   let filePath = path.join(__dirname, safeUrl);
 
