@@ -182,9 +182,14 @@
   border-color: #CBD2DF;
 }
 
-/* Greener Choice Banner */
+/* Flight Card Banners (Full width across top of card) */
+.flight-card-banner {
+  grid-column: 1 / -1 !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .flight-card-banner.eco-banner {
-  grid-column: 1 / -1;
   background-color: var(--sk-green-light);
   color: #007369;
   font-size: 0.8rem;
@@ -196,12 +201,26 @@
   gap: 8px;
 }
 
+.flight-card-banner.live-radar-banner {
+  background: #E8F5E9;
+  color: #1B5E20;
+  border-bottom: 1px solid #C8E6C9;
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .eco-banner strong {
   font-weight: 700;
 }
 
 /* Flight Card Main Body */
 .flight-card-main {
+  grid-column: 1 / 2;
+  min-width: 0;
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
@@ -227,17 +246,26 @@
 }
 
 .airline-badge {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-sm);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
+  background-color: #ffffff;
+  border: 1px solid var(--sk-border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: -0.5px;
   flex-shrink: 0;
+  overflow: hidden;
+  padding: 3px;
+  box-shadow: 0 1px 3px rgba(5, 32, 60, 0.05);
+}
+
+.airline-badge img,
+.airline-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .airline-meta {
@@ -367,6 +395,7 @@
 
 /* Flight Card CTA Column */
 .flight-card-cta {
+  grid-column: 2 / 3;
   border-left: 1px solid var(--sk-border-subtle);
   background-color: #FAFBFC;
   padding: 20px 24px;

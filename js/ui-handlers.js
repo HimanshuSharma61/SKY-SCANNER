@@ -187,7 +187,7 @@ export function renderFlightResults() {
     return `
       <div class="flight-card" data-flight-id="${flight.id}">
         ${flight.isLiveApi ? `
-          <div class="flight-card-banner" style="background: #E8F5E9; color: #1B5E20; border-bottom: 1px solid #C8E6C9; padding: 6px 16px; font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+          <div class="flight-card-banner live-radar-banner">
             <span>📡 Live Radar · Status: <strong style="text-transform: capitalize;">${flight.flightStatus}</strong>${flight.terminal ? ` · Terminal ${flight.terminal}` : ''}${flight.delay ? ` · Delay +${flight.delay}m` : ''}</span>
             <span style="font-size: 0.72rem; opacity: 0.85;">AviationStack Live</span>
           </div>
@@ -201,8 +201,14 @@ export function renderFlightResults() {
           <!-- Outbound Leg -->
           <div class="flight-leg">
             <div class="airline-brand">
-              <div class="airline-badge" style="background-color: ${flight.airline.logoBg}">
-                ${flight.airline.code}
+              <div class="airline-badge" title="${flight.airline.name}">
+                <img 
+                  src="images/airlines/${flight.airline.code}.png" 
+                  alt="${flight.airline.name}" 
+                  class="airline-logo-img" 
+                  loading="lazy"
+                  onerror="this.onerror=null; this.src='https://pics.avs.io/120/120/${flight.airline.code}.png';" 
+                />
               </div>
               <div class="airline-meta">
                 <span class="airline-title">${flight.airline.name}</span>
@@ -239,8 +245,14 @@ export function renderFlightResults() {
           ${flight.returnLeg ? `
             <div class="flight-leg return-leg">
               <div class="airline-brand">
-                <div class="airline-badge" style="background-color: ${flight.airline.logoBg}">
-                  ${flight.airline.code}
+                <div class="airline-badge" title="${flight.airline.name}">
+                  <img 
+                    src="images/airlines/${flight.airline.code}.png" 
+                    alt="${flight.airline.name}" 
+                    class="airline-logo-img" 
+                    loading="lazy"
+                    onerror="this.onerror=null; this.src='https://pics.avs.io/120/120/${flight.airline.code}.png';" 
+                  />
                 </div>
                 <div class="airline-meta">
                   <span class="airline-title">${flight.airline.name} (Return)</span>
@@ -404,6 +416,7 @@ export function renderBookingModalStep() {
       <div class="booking-step-view">
         <div class="booking-flight-summary-card">
           <div class="flight-mini-route">
+            <img src="images/airlines/${flight.airline.code}.png" alt="${flight.airline.name}" class="flight-mini-logo" onerror="this.onerror=null; this.src='https://pics.avs.io/60/60/${flight.airline.code}.png';" />
             <span class="flight-mini-code">${flight.origin.code}</span>
             <span class="flight-mini-arrow">➔</span>
             <span class="flight-mini-code">${flight.dest.code}</span>
@@ -553,6 +566,24 @@ export function renderBookingModalStep() {
         bookingDate: new Date().toLocaleDateString('en-GB')
       };
 
+      try {
+        const allBookings = JSON.parse(localStorage.getItem('skyscanner_all_confirmed_bookings') || '[]');
+        allBookings.unshift({
+          pnr,
+          passengerName: pName,
+          email: pEmail,
+          seat,
+          flightNumber: flight.flightNumber,
+          airlineName: flight.airline?.name,
+          originCode: flight.origin?.code,
+          destCode: flight.dest?.code,
+          price: currentProvider.price,
+          providerName: currentProvider.name,
+          date: new Date().toLocaleDateString('en-GB')
+        });
+        localStorage.setItem('skyscanner_all_confirmed_bookings', JSON.stringify(allBookings));
+      } catch {}
+
       AppState.setState({
         activeBookingStep: 'confirmed',
         latestBookingConfirmed: booking
@@ -572,7 +603,7 @@ export function renderBookingModalStep() {
         <div class="e-ticket-card">
           <div class="ticket-header">
             <div class="ticket-airline">
-              <span class="badge-mini" style="background:${flight.airline.logoBg}">${flight.airline.code}</span>
+              <img src="images/airlines/${flight.airline.code}.png" alt="${flight.airline.name}" class="ticket-airline-logo" onerror="this.onerror=null; this.src='https://pics.avs.io/120/120/${flight.airline.code}.png';" />
               <strong>${flight.airline.name}</strong>
             </div>
             <div class="ticket-pnr">
@@ -914,9 +945,12 @@ function populateAirlineFilterCheckboxes(flights) {
 
   container.innerHTML = Array.from(airlineMap.values()).map(a => `
     <label class="filter-checkbox-label">
-      <input type="checkbox" class="filter-airline-checkbox" value="${a.code}" ${flightFilters.airlines.includes(a.code) ? 'checked' : ''} />
-      <span class="cb-custom"></span>
-      <span class="airline-name-text">${a.name}</span>
+      <div style="display: flex; align-items: center; min-width: 0;">
+        <input type="checkbox" class="filter-airline-checkbox" value="${a.code}" ${flightFilters.airlines.includes(a.code) ? 'checked' : ''} />
+        <span class="cb-custom"></span>
+        <img src="images/airlines/${a.code}.png" alt="${a.name}" class="airline-filter-logo" onerror="this.onerror=null; this.src='https://pics.avs.io/60/60/${a.code}.png';" />
+        <span class="airline-name-text">${a.name}</span>
+      </div>
       <span class="filter-price-from">${formatCurrency(a.minPrice, currency)}</span>
     </label>
   `).join('');

@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="styles/hotels-cars.css" />
   <link rel="stylesheet" href="styles/explore.css" />
   <link rel="stylesheet" href="styles/modal.css" />
+  <link rel="stylesheet" href="styles/auth.css" />
   <link rel="stylesheet" href="styles/responsive.css" />
 </head>
 
@@ -608,6 +609,19 @@
       </div>
       <div class="modal-scroll-body" id="info-modal-body">
         <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 7: User & Admin Authentication / Google Sign In Modal -->
+  <div class="sk-modal-overlay" id="login-modal" role="dialog" aria-modal="true">
+    <div class="sk-modal-box" style="max-width: 480px;">
+      <div class="modal-header-bar">
+        <h2 class="modal-title">Sign in to Skyscanner</h2>
+        <button type="button" class="btn-modal-close" id="btn-close-login-modal" aria-label="Close modal">×</button>
+      </div>
+      <div class="modal-scroll-body" id="login-modal-body" style="padding: 24px;">
+        <!-- Populated dynamically by auth-ui.js -->
       </div>
     </div>
   </div>

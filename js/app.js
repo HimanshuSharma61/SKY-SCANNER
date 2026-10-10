@@ -22,8 +22,12 @@ import {
   updateActiveFiltersBadge
 } from './ui-handlers.js';
 import { openInfoModal, closeInfoModal } from './info-modal.js';
+import { initAuthUI } from './auth-ui.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // 0. Initialize Authentication UI & Profile
+  initAuthUI();
+
   // 1. Initialize live currency exchange rates
   await initCurrencyRates();
   updateCurrencyDisplays();

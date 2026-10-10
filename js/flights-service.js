@@ -6,21 +6,21 @@ import { getApiConfig } from './api-config.js';
 
 // Real world airlines data
 export const AIRLINES = {
-  '6E': { code: '6E', name: 'IndiGo', logoBg: '#002B7F', logoText: 'IndiGo', alliance: null, rating: 4.4 },
-  'AI': { code: 'AI', name: 'Air India', logoBg: '#E4002B', logoText: 'Air India', alliance: 'Star Alliance', rating: 4.1 },
-  'UK': { code: 'UK', name: 'Vistara', logoBg: '#581845', logoText: 'Vistara', alliance: 'Tata SIA', rating: 4.6 },
-  'QP': { code: 'QP', name: 'Akasa Air', logoBg: '#FF6F00', logoText: 'Akasa', alliance: null, rating: 4.3 },
-  'SG': { code: 'SG', name: 'SpiceJet', logoBg: '#D32F2F', logoText: 'SpiceJet', alliance: null, rating: 3.8 },
-  'EK': { code: 'EK', name: 'Emirates', logoBg: '#D71920', logoText: 'Emirates', alliance: null, rating: 4.8 },
-  'QR': { code: 'QR', name: 'Qatar Airways', logoBg: '#5C0632', logoText: 'Qatar', alliance: 'oneworld', rating: 4.8 },
-  'SQ': { code: 'SQ', name: 'Singapore Airlines', logoBg: '#1B2C68', logoText: 'Singapore Air', alliance: 'Star Alliance', rating: 4.9 },
-  'BA': { code: 'BA', name: 'British Airways', logoBg: '#075AAA', logoText: 'British Airways', alliance: 'oneworld', rating: 4.3 },
-  'LH': { code: 'LH', name: 'Lufthansa', logoBg: '#05164D', logoText: 'Lufthansa', alliance: 'Star Alliance', rating: 4.4 },
-  'EY': { code: 'EY', name: 'Etihad Airways', logoBg: '#967839', logoText: 'Etihad', alliance: null, rating: 4.5 },
-  'AF': { code: 'AF', name: 'Air France', logoBg: '#002157', logoText: 'Air France', alliance: 'SkyTeam', rating: 4.4 },
-  'TG': { code: 'TG', name: 'Thai Airways', logoBg: '#4A154B', logoText: 'Thai', alliance: 'Star Alliance', rating: 4.3 },
-  'MH': { code: 'MH', name: 'Malaysia Airlines', logoBg: '#004B87', logoText: 'Malaysia Air', alliance: 'oneworld', rating: 4.2 },
-  'UA': { code: 'UA', name: 'United Airlines', logoBg: '#002244', logoText: 'United', alliance: 'Star Alliance', rating: 4.1 },
+  '6E': { code: '6E', name: 'IndiGo', logoBg: '#002B7F', logoUrl: 'images/airlines/6E.png', logoText: 'IndiGo', alliance: null, rating: 4.4 },
+  'AI': { code: 'AI', name: 'Air India', logoBg: '#E4002B', logoUrl: 'images/airlines/AI.png', logoText: 'Air India', alliance: 'Star Alliance', rating: 4.1 },
+  'UK': { code: 'UK', name: 'Vistara', logoBg: '#581845', logoUrl: 'images/airlines/UK.png', logoText: 'Vistara', alliance: 'Tata SIA', rating: 4.6 },
+  'QP': { code: 'QP', name: 'Akasa Air', logoBg: '#FF6F00', logoUrl: 'images/airlines/QP.png', logoText: 'Akasa', alliance: null, rating: 4.3 },
+  'SG': { code: 'SG', name: 'SpiceJet', logoBg: '#D32F2F', logoUrl: 'images/airlines/SG.png', logoText: 'SpiceJet', alliance: null, rating: 3.8 },
+  'EK': { code: 'EK', name: 'Emirates', logoBg: '#D71920', logoUrl: 'images/airlines/EK.png', logoText: 'Emirates', alliance: null, rating: 4.8 },
+  'QR': { code: 'QR', name: 'Qatar Airways', logoBg: '#5C0632', logoUrl: 'images/airlines/QR.png', logoText: 'Qatar', alliance: 'oneworld', rating: 4.8 },
+  'SQ': { code: 'SQ', name: 'Singapore Airlines', logoBg: '#1B2C68', logoUrl: 'images/airlines/SQ.png', logoText: 'Singapore Air', alliance: 'Star Alliance', rating: 4.9 },
+  'BA': { code: 'BA', name: 'British Airways', logoBg: '#075AAA', logoUrl: 'images/airlines/BA.png', logoText: 'British Airways', alliance: 'oneworld', rating: 4.3 },
+  'LH': { code: 'LH', name: 'Lufthansa', logoBg: '#05164D', logoUrl: 'images/airlines/LH.png', logoText: 'Lufthansa', alliance: 'Star Alliance', rating: 4.4 },
+  'EY': { code: 'EY', name: 'Etihad Airways', logoBg: '#967839', logoUrl: 'images/airlines/EY.png', logoText: 'Etihad', alliance: null, rating: 4.5 },
+  'AF': { code: 'AF', name: 'Air France', logoBg: '#002157', logoUrl: 'images/airlines/AF.png', logoText: 'Air France', alliance: 'SkyTeam', rating: 4.4 },
+  'TG': { code: 'TG', name: 'Thai Airways', logoBg: '#4A154B', logoUrl: 'images/airlines/TG.png', logoText: 'Thai', alliance: 'Star Alliance', rating: 4.3 },
+  'MH': { code: 'MH', name: 'Malaysia Airlines', logoBg: '#004B87', logoUrl: 'images/airlines/MH.png', logoText: 'Malaysia Air', alliance: 'oneworld', rating: 4.2 },
+  'UA': { code: 'UA', name: 'United Airlines', logoBg: '#002244', logoUrl: 'images/airlines/UA.png', logoText: 'United', alliance: 'Star Alliance', rating: 4.1 },
 };
 
 // Calculate approximate great-circle distance in km
@@ -453,6 +453,7 @@ function adaptAviationStackResults(rawFlights, { origin, dest, departDate, retur
       code: airlineIata,
       name: airlineName,
       logoBg: '#05203C',
+      logoUrl: `images/airlines/${airlineIata}.png`,
       rating: 4.4
     };
 

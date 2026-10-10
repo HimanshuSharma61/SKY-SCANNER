@@ -442,6 +442,7 @@
   }
 
   .flight-card-main {
+    grid-column: 1 / -1;
     padding: 16px 14px;
     gap: 14px;
   }
@@ -456,9 +457,9 @@
   }
 
   .airline-badge {
-    width: 32px;
-    height: 32px;
-    font-size: 0.78rem;
+    width: 34px;
+    height: 34px;
+    padding: 2px;
   }
 
   .airline-title {
@@ -500,6 +501,7 @@
 
   /* Flight Card CTA Mobile Strip */
   .flight-card-cta {
+    grid-column: 1 / -1;
     border-left: none;
     border-top: 1px solid var(--sk-border-subtle);
     padding: 12px 14px;
