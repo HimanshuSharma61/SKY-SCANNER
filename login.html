@@ -170,6 +170,20 @@
       <form id="login-page-form">
         <div id="page-auth-error" style="display: none; background: #FFEBEE; color: #C62828; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.84rem; font-weight: 600; margin-bottom: 14px;"></div>
 
+        <!-- Admin Credentials Quick Hint (Shown in Admin Sign In) -->
+        <div id="page-admin-hint" style="display: none; background: rgba(7, 112, 227, 0.08); border: 1px dashed rgba(7, 112, 227, 0.35); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; align-items: center; justify-content: space-between; gap: 10px;">
+          <div style="font-size: 0.78rem; color: var(--sk-navy-main); line-height: 1.45;">
+            <div style="font-weight: 700; color: var(--sk-blue-primary); display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
+              <span>🛡️ Authorized Administrator Credentials</span>
+            </div>
+            <div>Email: <strong style="color: #05203c;">nakul6165@gmail.com</strong></div>
+            <div>Password &amp; Secure Key: <strong style="color: #05203c;">6266843571</strong></div>
+          </div>
+          <button type="button" id="btn-page-autofill-admin" class="btn btn-secondary btn-sm" style="font-size: 0.74rem; font-weight: 700; padding: 5px 10px; white-space: nowrap; border-color: var(--sk-blue-primary); color: var(--sk-blue-primary);">
+            ⚡ Fill Details
+          </button>
+        </div>
+
         <!-- Full Name (Sign Up only) -->
         <div class="auth-form-group" id="name-group" style="display: none;">
           <label class="auth-form-label" for="page-name">Full Name</label>
@@ -200,7 +214,7 @@
         <!-- Secret Admin Key (Admin Sign In only) -->
         <div class="auth-form-group" id="admin-key-group" style="display: none;">
           <label class="auth-form-label" for="page-admin-key">Secret Administrator Key</label>
-          <input type="password" id="page-admin-key" class="auth-input" placeholder="Enter administrator access key" />
+          <input type="password" id="page-admin-key" class="auth-input" placeholder="Enter secure key (6266843571)" />
         </div>
 
         <!-- Submit Button -->
@@ -238,6 +252,7 @@
     const tabUser = document.getElementById('tab-user-role');
     const tabAdmin = document.getElementById('tab-admin-role');
 
+    const adminHint = document.getElementById('page-admin-hint');
     const nameGroup = document.getElementById('name-group');
     const nameInput = document.getElementById('page-name');
     const emailInput = document.getElementById('page-email');
@@ -261,9 +276,12 @@
         btnModeSignup.classList.add('active');
         btnModeSignin.classList.remove('active');
         roleTabsContainer.style.display = 'none';
+        adminHint.style.display = 'none';
         nameGroup.style.display = 'flex';
         confirmPassGroup.style.display = 'flex';
         keyGroup.style.display = 'none';
+        emailInput.placeholder = 'name@domain.com';
+        passInput.placeholder = 'Enter password';
         pageHeading.textContent = 'Create your Skyscanner account';
         pageSubheading.textContent = 'Sign up to track fares, save favorite routes, and manage trips';
         submitBtn.innerHTML = '<span>Create Free Account ➔</span>';
@@ -279,16 +297,21 @@
         if (currentRole === 'admin') {
           tabAdmin.classList.add('active');
           tabUser.classList.remove('active');
+          adminHint.style.display = 'flex';
           keyGroup.style.display = 'flex';
-          emailInput.placeholder = 'admin@company.com';
+          emailInput.placeholder = 'nakul6165@gmail.com';
+          passInput.placeholder = 'Enter password (6266843571)';
+          keyInput.placeholder = 'Enter secure key (6266843571)';
           submitBtn.innerHTML = '<span>Sign In as Admin 🛡️</span>';
           pageHeading.textContent = 'Skyscanner Admin Portal';
           pageSubheading.textContent = 'Authenticate with your administrator credentials and secret key';
         } else {
           tabUser.classList.add('active');
           tabAdmin.classList.remove('active');
+          adminHint.style.display = 'none';
           keyGroup.style.display = 'none';
           emailInput.placeholder = 'name@domain.com';
+          passInput.placeholder = 'Enter password';
           submitBtn.innerHTML = '<span>Sign In as Traveller ➔</span>';
           pageHeading.textContent = 'Sign in to Skyscanner';
           pageSubheading.textContent = 'Access flights, bookings, and verified traveller benefits';
@@ -331,6 +354,13 @@
       updateView();
     });
 
+    // Auto-fill admin details helper
+    document.getElementById('btn-page-autofill-admin')?.addEventListener('click', () => {
+      emailInput.value = 'nakul6165@gmail.com';
+      passInput.value = '6266843571';
+      keyInput.value = '6266843571';
+    });
+
     // Google Sign in Button
     document.getElementById('btn-login-page-google').addEventListener('click', () => {
       triggerGoogleOAuthLogin(currentRole);
@@ -360,8 +390,12 @@
           const pass = passInput.value;
           const key = keyInput.value.trim();
 
-          Auth.loginWithEmail(email, pass, currentRole, key);
-          window.location.href = 'index.html';
+          const user = Auth.loginWithEmail(email, pass, currentRole, key);
+          if (user.role === 'admin' || currentRole === 'admin') {
+            window.location.href = 'index.html?openAdmin=true';
+          } else {
+            window.location.href = 'index.html';
+          }
         }
       } catch (err) {
         errBox.textContent = err.message;

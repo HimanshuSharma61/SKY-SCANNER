@@ -24,6 +24,17 @@ export function initAuthUI() {
     const loginModal = document.getElementById('login-modal');
     if (loginModal) loginModal.classList.remove('active');
   });
+
+  // Check URL query or hash to auto-open admin panel if admin is authenticated
+  const urlParams = new URLSearchParams(window.location.search);
+  if ((urlParams.get('openAdmin') === 'true' || window.location.hash === '#admin') && Auth.isAdmin()) {
+    setTimeout(() => {
+      openAdminDashboard();
+    }, 250);
+    if (urlParams.get('openAdmin') === 'true') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 }
 
 // Initialize Official Google Identity Services SDK
@@ -278,6 +289,21 @@ function renderLoginFormContent() {
     <form id="auth-email-form">
       <div id="auth-error-msg" style="display: none; background: #FFEBEE; color: #C62828; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.84rem; font-weight: 600; margin-bottom: 14px;"></div>
 
+      ${isAdmin && !isSignUp ? `
+        <div class="admin-credential-hint" style="background: rgba(7, 112, 227, 0.08); border: 1px dashed rgba(7, 112, 227, 0.35); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+          <div style="font-size: 0.78rem; color: var(--sk-navy-main); line-height: 1.45;">
+            <div style="font-weight: 700; color: var(--sk-blue-primary); display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
+              <span>🛡️ Authorized Administrator Credentials</span>
+            </div>
+            <div>Email: <strong style="color: #05203c;">nakul6165@gmail.com</strong></div>
+            <div>Password &amp; Secure Key: <strong style="color: #05203c;">6266843571</strong></div>
+          </div>
+          <button type="button" id="btn-autofill-admin" class="btn btn-secondary btn-sm" style="font-size: 0.74rem; font-weight: 700; padding: 5px 10px; white-space: nowrap; border-color: var(--sk-blue-primary); color: var(--sk-blue-primary);">
+            ⚡ Fill Details
+          </button>
+        </div>
+      ` : ''}
+
       ${isSignUp ? `
         <div class="auth-form-group">
           <label class="auth-form-label" for="auth-name-input">Full Name</label>
@@ -293,7 +319,7 @@ function renderLoginFormContent() {
           type="email" 
           id="auth-email-input" 
           class="auth-input" 
-          placeholder="${isAdmin && !isSignUp ? 'admin@company.com' : 'your.email@domain.com'}" 
+          placeholder="${isAdmin && !isSignUp ? 'nakul6165@gmail.com' : 'your.email@domain.com'}" 
           required 
         />
       </div>
@@ -307,7 +333,7 @@ function renderLoginFormContent() {
           type="password" 
           id="auth-password-input" 
           class="auth-input" 
-          placeholder="Enter your password" 
+          placeholder="${isAdmin && !isSignUp ? 'Enter password (6266843571)' : 'Enter your password'}" 
           required 
         />
       </div>
@@ -328,7 +354,7 @@ function renderLoginFormContent() {
             type="password" 
             id="auth-admin-key-input" 
             class="auth-input" 
-            placeholder="Enter secret administrator key" 
+            placeholder="Enter secure key (6266843571)" 
             required 
           />
         </div>
@@ -388,6 +414,16 @@ function renderLoginFormContent() {
     renderLoginFormContent();
   });
 
+  // Autofill button helper
+  document.getElementById('btn-autofill-admin')?.addEventListener('click', () => {
+    const emailInput = document.getElementById('auth-email-input');
+    const passInput = document.getElementById('auth-password-input');
+    const keyInput = document.getElementById('auth-admin-key-input');
+    if (emailInput) emailInput.value = 'nakul6165@gmail.com';
+    if (passInput) passInput.value = '6266843571';
+    if (keyInput) keyInput.value = '6266843571';
+  });
+
   // Google OAuth trigger
   document.getElementById('btn-auth-google')?.addEventListener('click', () => {
     triggerGoogleOAuthLogin(activeAuthRole);
@@ -417,8 +453,15 @@ function renderLoginFormContent() {
         const password = document.getElementById('auth-password-input')?.value || '';
         const adminKey = document.getElementById('auth-admin-key-input')?.value || '';
 
-        Auth.loginWithEmail(email, password, activeAuthRole, adminKey);
-        showToast(`Welcome back, ${Auth.getCurrentUser().name}!`);
+        const user = Auth.loginWithEmail(email, password, activeAuthRole, adminKey);
+        showToast(`Welcome back, ${user.name}!`);
+
+        // Automatically open the Admin Dashboard if signed in as Admin
+        if (user.role === 'admin' || activeAuthRole === 'admin') {
+          setTimeout(() => {
+            openAdminDashboard();
+          }, 250);
+        }
       }
     } catch (err) {
       if (errBox) {

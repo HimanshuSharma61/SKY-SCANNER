@@ -18,10 +18,10 @@ export const DEMO_ACCOUNTS = {
     provider: 'email'
   },
   admin: {
-    email: 'admin@skyscanner.demo',
-    password: 'admin123',
-    adminKey: 'SKY-ADMIN-2026',
-    name: 'Admin Controller',
+    email: 'nakul6165@gmail.com',
+    password: '6266843571',
+    adminKey: '6266843571',
+    name: 'Nakul (Admin Controller)',
     role: 'admin',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80',
     provider: 'system'
@@ -94,28 +94,61 @@ class AuthService {
 
   // Login with standard Email / Password (User or Admin)
   loginWithEmail(email, password, role = 'user', adminKey = '') {
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPass = (password || '').trim();
+    const cleanKey = (adminKey || '').trim();
 
     if (role === 'admin') {
-      // Validate Admin
-      if (cleanEmail === DEMO_ACCOUNTS.admin.email && password === DEMO_ACCOUNTS.admin.password) {
-        if (adminKey && adminKey !== DEMO_ACCOUNTS.admin.adminKey) {
-          throw new Error('Invalid Secret Admin Key.');
+      // Primary Admin account: nakul6165@gmail.com
+      if (cleanEmail === 'nakul6165@gmail.com') {
+        if (cleanPass !== '6266843571' && password !== '6266843571') {
+          throw new Error('Invalid admin password. Please re-enter.');
+        }
+        if (cleanKey && cleanKey !== '6266843571') {
+          throw new Error('Invalid Secret Admin Key (Expected: 6266843571).');
         }
         return this.setUserSession(DEMO_ACCOUNTS.admin);
       }
-      // Allow custom admin if correct secret key provided
-      if (adminKey === 'SKY-ADMIN-2026' || adminKey === 'ADMIN123') {
+
+      // Legacy demo admin
+      if (cleanEmail === 'admin@skyscanner.demo') {
+        if (cleanPass !== 'admin123') {
+          throw new Error('Invalid admin password.');
+        }
+        if (cleanKey && cleanKey !== 'SKY-ADMIN-2026' && cleanKey !== '6266843571') {
+          throw new Error('Invalid Secret Admin Key.');
+        }
+        return this.setUserSession({
+          ...DEMO_ACCOUNTS.admin,
+          email: 'admin@skyscanner.demo',
+          name: 'Demo Admin'
+        });
+      }
+
+      // Custom admin with valid secret key and minimum password
+      if (cleanKey === '6266843571' || cleanKey === 'SKY-ADMIN-2026' || cleanKey === 'ADMIN123') {
+        if (!cleanPass || cleanPass.length < 4) {
+          throw new Error('Admin password required.');
+        }
         const adminUser = {
           email: cleanEmail,
-          name: cleanEmail.split('@')[0].toUpperCase() + ' (Admin)',
+          name: (cleanEmail.split('@')[0] || 'Admin').toUpperCase() + ' (Admin)',
           role: 'admin',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
           provider: 'email-admin'
         };
         return this.setUserSession(adminUser);
       }
-      throw new Error('Invalid Admin credentials or incorrect Secret Admin Key (Demo Key: SKY-ADMIN-2026).');
+
+      throw new Error('Invalid Admin credentials or incorrect Secret Admin Key (Key: 6266843571).');
+    }
+
+    // Auto-promote Nakul to Admin even if logging in via regular tab
+    if (cleanEmail === 'nakul6165@gmail.com') {
+      if (cleanPass !== '6266843571' && password !== '6266843571') {
+        throw new Error('Invalid password. Please re-enter.');
+      }
+      return this.setUserSession(DEMO_ACCOUNTS.admin);
     }
 
     // Regular User
