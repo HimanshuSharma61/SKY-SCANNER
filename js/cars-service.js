@@ -1,11 +1,46 @@
 // Car Hire Search Service with diverse vehicle categories & suppliers
 
 export const CARS_DATABASE = [
+  // Economy & Compact
   {
-    id: 'CAR_1',
-    name: 'Maruti Suzuki Swift or similar',
-    category: 'Small / Compact',
+    id: 'CAR_MINI_1',
+    name: 'Renault Kwid / Maruti Alto K10 or similar',
+    category: 'Mini',
     passengers: 4,
+    doors: 4,
+    luggage: 1,
+    transmission: 'Manual',
+    airConditioning: true,
+    supplier: 'Zoomcar',
+    supplierRating: 8.3,
+    dailyPriceINR: 1250,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_ECON_1',
+    name: 'Hyundai Grand i10 Nios / Tata Tiago or similar',
+    category: 'Economy',
+    passengers: 4,
+    doors: 4,
+    luggage: 2,
+    transmission: 'Manual',
+    airConditioning: true,
+    supplier: 'Budget',
+    supplierRating: 8.5,
+    dailyPriceINR: 1490,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_COMP_1',
+    name: 'Maruti Suzuki Swift / Baleno or similar',
+    category: 'Small / Compact',
+    passengers: 5,
     doors: 4,
     luggage: 2,
     transmission: 'Manual',
@@ -19,7 +54,26 @@ export const CARS_DATABASE = [
     freeCancellation: true
   },
   {
-    id: 'CAR_2',
+    id: 'CAR_COMP_2',
+    name: 'Volkswagen Polo / Hyundai i20 N-Line or similar',
+    category: 'Compact Premium',
+    passengers: 5,
+    doors: 4,
+    luggage: 2,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'Europcar',
+    supplierRating: 8.9,
+    dailyPriceINR: 2300,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+
+  // Sedans
+  {
+    id: 'CAR_SED_1',
     name: 'Hyundai Verna / Honda City or similar',
     category: 'Medium / Sedan',
     passengers: 5,
@@ -36,7 +90,26 @@ export const CARS_DATABASE = [
     freeCancellation: true
   },
   {
-    id: 'CAR_3',
+    id: 'CAR_SED_2',
+    name: 'Skoda Slavia / Volkswagen Virtus 1.5 TSI',
+    category: 'Executive Sedan',
+    passengers: 5,
+    doors: 4,
+    luggage: 3,
+    transmission: 'Automatic (DSG)',
+    airConditioning: true,
+    supplier: 'Sixt',
+    supplierRating: 9.0,
+    dailyPriceINR: 3150,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+
+  // SUVs & 4x4
+  {
+    id: 'CAR_SUV_1',
     name: 'Hyundai Creta / Kia Seltos or similar',
     category: 'SUV',
     passengers: 5,
@@ -53,8 +126,61 @@ export const CARS_DATABASE = [
     freeCancellation: true
   },
   {
-    id: 'CAR_4',
-    name: 'Toyota Fortuner 4x4 or similar',
+    id: 'CAR_4X4_1',
+    name: 'Mahindra Thar 4x4 Hard Top / Convertible',
+    category: '4x4 Adventure',
+    passengers: 4,
+    doors: 3,
+    luggage: 2,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'Thrifty',
+    supplierRating: 8.7,
+    dailyPriceINR: 4200,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_SUV_2',
+    name: 'Tata Harrier / Mahindra XUV700 AX7',
+    category: 'Midsize SUV',
+    passengers: 5,
+    doors: 5,
+    luggage: 4,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'National',
+    supplierRating: 8.9,
+    dailyPriceINR: 4500,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+
+  // Family 7-Seaters
+  {
+    id: 'CAR_MPV_1',
+    name: 'Toyota Innova Crysta / Hycross (Captain Seats)',
+    category: '7-Seater People Carrier',
+    passengers: 7,
+    doors: 5,
+    luggage: 5,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'Avis',
+    supplierRating: 9.2,
+    dailyPriceINR: 4900,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_SUV_3',
+    name: 'Toyota Fortuner 4x4 Sigma or similar',
     category: 'Large SUV',
     passengers: 7,
     doors: 5,
@@ -69,9 +195,47 @@ export const CARS_DATABASE = [
     image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=700&q=80',
     freeCancellation: true
   },
+
+  // Electric Vehicles (EV)
   {
-    id: 'CAR_5',
-    name: 'Mercedes-Benz C-Class / BMW 3 Series',
+    id: 'CAR_EV_1',
+    name: 'Tata Nexon EV Max / BYD Atto 3 (400km Range)',
+    category: 'Electric / Eco',
+    passengers: 5,
+    doors: 5,
+    luggage: 3,
+    transmission: 'Automatic (Single Speed)',
+    airConditioning: true,
+    supplier: 'Green Motion',
+    supplierRating: 9.0,
+    dailyPriceINR: 3400,
+    fuelPolicy: 'Charge & Return',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_EV_2',
+    name: 'Tesla Model 3 / Model Y Long Range',
+    category: 'Electric Luxury',
+    passengers: 5,
+    doors: 4,
+    luggage: 4,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'Hertz EV',
+    supplierRating: 9.3,
+    dailyPriceINR: 8200,
+    fuelPolicy: 'Charge & Return',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+
+  // Luxury & Premium
+  {
+    id: 'CAR_LUX_1',
+    name: 'Mercedes-Benz C-Class / E-Class AMG Line',
     category: 'Luxury',
     passengers: 5,
     doors: 4,
@@ -83,14 +247,48 @@ export const CARS_DATABASE = [
     dailyPriceINR: 9800,
     fuelPolicy: 'Full to Full',
     mileage: 'Unlimited mileage',
-    image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=700&q=80',
+    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_LUX_2',
+    name: 'BMW 3 Series Gran Limousine / 5 Series',
+    category: 'Luxury Sport',
+    passengers: 5,
+    doors: 4,
+    luggage: 3,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'Hertz Prestige',
+    supplierRating: 9.5,
+    dailyPriceINR: 10500,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=700&q=80',
+    freeCancellation: true
+  },
+  {
+    id: 'CAR_LUX_3',
+    name: 'Range Rover Velar / Evoque R-Dynamic',
+    category: 'Luxury SUV',
+    passengers: 5,
+    doors: 5,
+    luggage: 4,
+    transmission: 'Automatic',
+    airConditioning: true,
+    supplier: 'Enterprise Exotic',
+    supplierRating: 9.6,
+    dailyPriceINR: 12800,
+    fuelPolicy: 'Full to Full',
+    mileage: 'Unlimited mileage',
+    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=700&q=80',
     freeCancellation: true
   }
 ];
 
 export function searchCars({ location = '', category = 'all', days = 3 }) {
   let list = [...CARS_DATABASE];
-  if (category !== 'all') {
+  if (category && category !== 'all') {
     list = list.filter(c => c.category.toLowerCase().includes(category.toLowerCase()));
   }
 
@@ -98,6 +296,5 @@ export function searchCars({ location = '', category = 'all', days = 3 }) {
     ...car,
     totalPriceINR: car.dailyPriceINR * days,
     rentalDays: days,
-    pickupLocation: location || 'Airport Terminal / Meet & Greet'
   }));
 }
