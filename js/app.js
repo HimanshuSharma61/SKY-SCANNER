@@ -169,18 +169,33 @@ function setupMainNavigationTabs() {
 function setupTripTypeButtons() {
   const tripBtns = document.querySelectorAll('.trip-type-btn');
   const returnDateGroup = document.getElementById('return-date-container');
+  const pillTripTypeBtn = document.getElementById('btn-pill-trip-type');
+  const pillTripDropdown = document.getElementById('pill-trip-dropdown');
+  const pillTripLabel = document.getElementById('pill-trip-type-label');
+
+  // Toggle Return pill dropdown
+  pillTripTypeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('pill-bags-dropdown')?.classList.remove('active');
+    pillTripDropdown?.classList.toggle('active');
+  });
 
   tripBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       tripBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
       const tripType = btn.getAttribute('data-trip');
+      const labelText = btn.textContent.trim();
+      if (pillTripLabel) pillTripLabel.textContent = labelText;
+      pillTripDropdown?.classList.remove('active');
+
       AppState.updateFlightParams({ tripType });
 
       if (returnDateGroup) {
         if (tripType === 'oneway') {
-          returnDateGroup.style.opacity = '0.4';
+          returnDateGroup.style.opacity = '0.35';
           returnDateGroup.style.pointerEvents = 'none';
         } else {
           returnDateGroup.style.opacity = '1';
@@ -188,6 +203,21 @@ function setupTripTypeButtons() {
         }
       }
     });
+  });
+
+  // Toggle Bags pill dropdown
+  const pillBagsBtn = document.getElementById('btn-pill-bags');
+  const pillBagsDropdown = document.getElementById('pill-bags-dropdown');
+  pillBagsBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    pillTripDropdown?.classList.remove('active');
+    pillBagsDropdown?.classList.toggle('active');
+  });
+
+  // Close pill dropdowns on outside click
+  document.addEventListener('click', () => {
+    pillTripDropdown?.classList.remove('active');
+    pillBagsDropdown?.classList.remove('active');
   });
 
   // Direct flights checkbox

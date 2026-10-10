@@ -148,17 +148,50 @@
     <div class="container">
       <div class="hero-header-content">
         <h1 class="hero-main-title">Millions of cheap flights. One simple search.</h1>
-        <p class="hero-sub-title">Find the best deals from 1,200+ airlines and travel providers worldwide.</p>
       </div>
 
       <!-- Flights Search Widget -->
-      <div class="search-widget-card" id="flight-search-container">
-        <!-- Search Options Bar -->
+      <div class="search-widget-container" id="flight-search-container">
+        <!-- Search Options Bar (Directly on dark navy background) -->
         <div class="search-options-bar">
-          <div class="trip-type-group" role="radiogroup">
-            <button type="button" class="trip-type-btn active" data-trip="roundtrip" id="trip-roundtrip">Return</button>
-            <button type="button" class="trip-type-btn" data-trip="oneway" id="trip-oneway">One way</button>
-            <button type="button" class="trip-type-btn" data-trip="multicity" id="trip-multicity">Multi-city</button>
+          <div class="options-pills-row">
+            <!-- Return Dropdown Pill (Matches reference image) -->
+            <div class="pill-dropdown-wrap">
+              <button type="button" class="search-option-pill" id="btn-pill-trip-type" aria-haspopup="true">
+                <span id="pill-trip-type-label">Return</span>
+                <span class="pill-chevron">▾</span>
+              </button>
+              <div class="pill-dropdown-menu" id="pill-trip-dropdown">
+                <button type="button" class="pill-dropdown-item pill-trip-item trip-type-btn active" data-trip="roundtrip" id="trip-roundtrip">Return</button>
+                <button type="button" class="pill-dropdown-item pill-trip-item trip-type-btn" data-trip="oneway" id="trip-oneway">One way</button>
+                <button type="button" class="pill-dropdown-item pill-trip-item trip-type-btn" data-trip="multicity" id="trip-multicity">Multi-city</button>
+              </div>
+            </div>
+
+            <!-- Bags Dropdown Pill (Matches reference image) -->
+            <div class="pill-dropdown-wrap">
+              <button type="button" class="search-option-pill" id="btn-pill-bags" aria-haspopup="true">
+                <span id="pill-bags-label">Bags</span>
+                <span class="pill-chevron">▾</span>
+              </button>
+              <div class="pill-dropdown-menu bags-dropdown-panel" id="pill-bags-dropdown">
+                <div class="bags-dropdown-header">Cabin &amp; Checked Bags</div>
+                <div class="bags-option-row">
+                  <div>
+                    <div class="bags-title">Cabin bag</div>
+                    <div class="bags-subtitle">Under seat / overhead bin</div>
+                  </div>
+                  <span class="bags-status-tag tag-included">Included</span>
+                </div>
+                <div class="bags-option-row">
+                  <div>
+                    <div class="bags-title">Checked bag</div>
+                    <div class="bags-subtitle">15 kg – 20 kg standard</div>
+                  </div>
+                  <span class="bags-status-tag tag-standard">Standard</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="search-checkboxes-group">
@@ -176,100 +209,105 @@
         <!-- Flight Search Form -->
         <form id="flight-search-form">
           <div class="search-inputs-grid">
-            <!-- Origin Airport -->
-            <div class="search-field-wrapper field-origin">
-              <label class="field-label" for="flight-origin-input">From</label>
-              <div class="field-input-box">
-                <span class="field-icon">🛫</span>
-                <input type="text" class="field-text-input" id="flight-origin-input"
-                  placeholder="Country, city or airport" autocomplete="off" required />
-              </div>
-              <div class="autocomplete-dropdown" id="flight-origin-dropdown"></div>
-            </div>
-
-            <!-- Swap Airports Button -->
-            <button type="button" class="btn-swap-airports" id="btn-swap-airports" title="Swap origin and destination" aria-label="Swap origin and destination">
-              ⇄
-            </button>
-
-            <!-- Destination Airport -->
-            <div class="search-field-wrapper field-dest">
-              <label class="field-label" for="flight-dest-input">To</label>
-              <div class="field-input-box">
-                <span class="field-icon">🛬</span>
-                <input type="text" class="field-text-input" id="flight-dest-input"
-                  placeholder="Country, city or airport" autocomplete="off" required />
-              </div>
-              <div class="autocomplete-dropdown" id="flight-dest-dropdown"></div>
-            </div>
-
-            <!-- Depart Date -->
-            <div class="search-field-wrapper field-depart">
-              <label class="field-label" for="flight-depart-date">Depart</label>
-              <div class="field-input-box">
-                <span class="field-icon">📅</span>
-                <input type="date" class="field-text-input" id="flight-depart-date" required />
-              </div>
-            </div>
-
-            <!-- Return Date -->
-            <div class="search-field-wrapper field-return" id="return-date-container">
-              <label class="field-label" for="flight-return-date">Return</label>
-              <div class="field-input-box">
-                <span class="field-icon">📅</span>
-                <input type="date" class="field-text-input" id="flight-return-date" />
-              </div>
-            </div>
-
-            <!-- Travellers & Cabin Class -->
-            <div class="search-field-wrapper field-travellers">
-              <label class="field-label">Travellers and cabin class</label>
-              <div class="field-input-box travellers-trigger-box" id="travellers-trigger">
-                <span class="field-icon">👤</span>
-                <span class="travellers-summary-text" id="travellers-summary">1 adult, Economy</span>
+            <!-- Connected Segmented Search Bar -->
+            <div class="search-segmented-bar">
+              <!-- Origin Airport -->
+              <div class="search-field-wrapper field-origin">
+                <label class="field-label" for="flight-origin-input">From</label>
+                <div class="field-input-box">
+                  <span class="field-icon">🛫</span>
+                  <input type="text" class="field-text-input" id="flight-origin-input"
+                    placeholder="Country, city or airport" autocomplete="off" required />
+                </div>
+                <div class="autocomplete-dropdown" id="flight-origin-dropdown"></div>
               </div>
 
-              <!-- Travellers Backdrop for Mobile -->
-              <div class="travellers-backdrop" id="travellers-backdrop"></div>
+              <!-- Swap Airports Button -->
+              <div class="swap-button-col">
+                <button type="button" class="btn-swap-airports" id="btn-swap-airports" title="Swap origin and destination" aria-label="Swap origin and destination">
+                  ⇄
+                </button>
+              </div>
 
-              <!-- Travellers Popover Dropdown -->
-              <div class="travellers-popover" id="travellers-popover">
-                <div class="popover-stepper-row">
-                  <div class="stepper-label-col">
-                    <span class="stepper-title">Adults</span>
-                    <span class="stepper-subtitle">16+ years</span>
-                  </div>
-                  <div class="stepper-controls">
-                    <button type="button" class="btn-stepper" id="btn-adults-minus">-</button>
-                    <span class="stepper-value" id="adults-count">1</span>
-                    <button type="button" class="btn-stepper" id="btn-adults-plus">+</button>
-                  </div>
+              <!-- Destination Airport -->
+              <div class="search-field-wrapper field-dest">
+                <label class="field-label" for="flight-dest-input">To</label>
+                <div class="field-input-box">
+                  <span class="field-icon">🛬</span>
+                  <input type="text" class="field-text-input" id="flight-dest-input"
+                    placeholder="Country, city or airport" autocomplete="off" required />
+                </div>
+                <div class="autocomplete-dropdown" id="flight-dest-dropdown"></div>
+              </div>
+
+              <!-- Depart Date -->
+              <div class="search-field-wrapper field-depart">
+                <label class="field-label" for="flight-depart-date">Depart</label>
+                <div class="field-input-box">
+                  <span class="field-icon">📅</span>
+                  <input type="date" class="field-text-input" id="flight-depart-date" required />
+                </div>
+              </div>
+
+              <!-- Return Date -->
+              <div class="search-field-wrapper field-return" id="return-date-container">
+                <label class="field-label" for="flight-return-date">Return</label>
+                <div class="field-input-box">
+                  <span class="field-icon">📅</span>
+                  <input type="date" class="field-text-input" id="flight-return-date" />
+                </div>
+              </div>
+
+              <!-- Travellers & Cabin Class -->
+              <div class="search-field-wrapper field-travellers">
+                <label class="field-label">Travellers and cabin class</label>
+                <div class="field-input-box travellers-trigger-box" id="travellers-trigger">
+                  <span class="field-icon">👤</span>
+                  <span class="travellers-summary-text" id="travellers-summary">1 adult, Economy</span>
                 </div>
 
-                <div class="popover-stepper-row">
-                  <div class="stepper-label-col">
-                    <span class="stepper-title">Children</span>
-                    <span class="stepper-subtitle">0 to 15 years</span>
-                  </div>
-                  <div class="stepper-controls">
-                    <button type="button" class="btn-stepper" id="btn-children-minus">-</button>
-                    <span class="stepper-value" id="children-count">0</span>
-                    <button type="button" class="btn-stepper" id="btn-children-plus">+</button>
-                  </div>
-                </div>
+                <!-- Travellers Backdrop for Mobile -->
+                <div class="travellers-backdrop" id="travellers-backdrop"></div>
 
-                <div class="popover-cabin-classes">
-                  <div class="cabin-classes-title">Cabin Class</div>
-                  <div class="cabin-class-pills-list">
-                    <div class="cabin-class-pill active" data-class="Economy">Economy</div>
-                    <div class="cabin-class-pill" data-class="Premium Economy">Prem Economy</div>
-                    <div class="cabin-class-pill" data-class="Business">Business</div>
-                    <div class="cabin-class-pill" data-class="First Class">First Class</div>
+                <!-- Travellers Popover Dropdown -->
+                <div class="travellers-popover" id="travellers-popover">
+                  <div class="popover-stepper-row">
+                    <div class="stepper-label-col">
+                      <span class="stepper-title">Adults</span>
+                      <span class="stepper-subtitle">16+ years</span>
+                    </div>
+                    <div class="stepper-controls">
+                      <button type="button" class="btn-stepper" id="btn-adults-minus">-</button>
+                      <span class="stepper-value" id="adults-count">1</span>
+                      <button type="button" class="btn-stepper" id="btn-adults-plus">+</button>
+                    </div>
                   </div>
-                </div>
 
-                <button type="button" class="btn btn-primary btn-sm" id="btn-done-travellers"
-                  style="width: 100%;">Done</button>
+                  <div class="popover-stepper-row">
+                    <div class="stepper-label-col">
+                      <span class="stepper-title">Children</span>
+                      <span class="stepper-subtitle">0 to 15 years</span>
+                    </div>
+                    <div class="stepper-controls">
+                      <button type="button" class="btn-stepper" id="btn-children-minus">-</button>
+                      <span class="stepper-value" id="children-count">0</span>
+                      <button type="button" class="btn-stepper" id="btn-children-plus">+</button>
+                    </div>
+                  </div>
+
+                  <div class="popover-cabin-classes">
+                    <div class="cabin-classes-title">Cabin Class</div>
+                    <div class="cabin-class-pills-list">
+                      <div class="cabin-class-pill active" data-class="Economy">Economy</div>
+                      <div class="cabin-class-pill" data-class="Premium Economy">Prem Economy</div>
+                      <div class="cabin-class-pill" data-class="Business">Business</div>
+                      <div class="cabin-class-pill" data-class="First Class">First Class</div>
+                    </div>
+                  </div>
+
+                  <button type="button" class="btn btn-primary btn-sm" id="btn-done-travellers"
+                    style="width: 100%;">Done</button>
+                </div>
               </div>
             </div>
 
