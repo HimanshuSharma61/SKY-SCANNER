@@ -289,21 +289,6 @@ function renderLoginFormContent() {
     <form id="auth-email-form">
       <div id="auth-error-msg" style="display: none; background: #FFEBEE; color: #C62828; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.84rem; font-weight: 600; margin-bottom: 14px;"></div>
 
-      ${isAdmin && !isSignUp ? `
-        <div class="admin-credential-hint" style="background: rgba(7, 112, 227, 0.08); border: 1px dashed rgba(7, 112, 227, 0.35); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-          <div style="font-size: 0.78rem; color: var(--sk-navy-main); line-height: 1.45;">
-            <div style="font-weight: 700; color: var(--sk-blue-primary); display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
-              <span>🛡️ Authorized Administrator Credentials</span>
-            </div>
-            <div>Email: <strong style="color: #05203c;">nakul6165@gmail.com</strong></div>
-            <div>Password &amp; Secure Key: <strong style="color: #05203c;">6266843571</strong></div>
-          </div>
-          <button type="button" id="btn-autofill-admin" class="btn btn-secondary btn-sm" style="font-size: 0.74rem; font-weight: 700; padding: 5px 10px; white-space: nowrap; border-color: var(--sk-blue-primary); color: var(--sk-blue-primary);">
-            ⚡ Fill Details
-          </button>
-        </div>
-      ` : ''}
-
       ${isSignUp ? `
         <div class="auth-form-group">
           <label class="auth-form-label" for="auth-name-input">Full Name</label>
@@ -319,7 +304,7 @@ function renderLoginFormContent() {
           type="email" 
           id="auth-email-input" 
           class="auth-input" 
-          placeholder="${isAdmin && !isSignUp ? 'nakul6165@gmail.com' : 'your.email@domain.com'}" 
+          placeholder="${isAdmin && !isSignUp ? 'admin@company.com' : 'your.email@domain.com'}" 
           required 
         />
       </div>
@@ -333,7 +318,7 @@ function renderLoginFormContent() {
           type="password" 
           id="auth-password-input" 
           class="auth-input" 
-          placeholder="${isAdmin && !isSignUp ? 'Enter password (6266843571)' : 'Enter your password'}" 
+          placeholder="Enter your password" 
           required 
         />
       </div>
@@ -354,7 +339,7 @@ function renderLoginFormContent() {
             type="password" 
             id="auth-admin-key-input" 
             class="auth-input" 
-            placeholder="Enter secure key (6266843571)" 
+            placeholder="Enter secret administrator key" 
             required 
           />
         </div>
@@ -412,16 +397,6 @@ function renderLoginFormContent() {
   document.getElementById('tab-auth-admin')?.addEventListener('click', () => {
     activeAuthRole = 'admin';
     renderLoginFormContent();
-  });
-
-  // Autofill button helper
-  document.getElementById('btn-autofill-admin')?.addEventListener('click', () => {
-    const emailInput = document.getElementById('auth-email-input');
-    const passInput = document.getElementById('auth-password-input');
-    const keyInput = document.getElementById('auth-admin-key-input');
-    if (emailInput) emailInput.value = 'nakul6165@gmail.com';
-    if (passInput) passInput.value = '6266843571';
-    if (keyInput) keyInput.value = '6266843571';
   });
 
   // Google OAuth trigger
