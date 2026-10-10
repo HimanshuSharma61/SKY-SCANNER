@@ -14,11 +14,23 @@ export function setupAirportAutocomplete(inputId, dropdownId, onSelect) {
   const input = document.getElementById(inputId);
   const dropdown = document.getElementById(dropdownId);
   if (!input || !dropdown) return;
+  const wrapper = input.closest('.search-field-wrapper');
+
+  function closeDropdown() {
+    dropdown.classList.remove('active');
+    if (wrapper) wrapper.classList.remove('is-active');
+  }
+
+  function openDropdown() {
+    dropdown.classList.add('active');
+    dropdown.scrollTop = 0;
+    if (wrapper) wrapper.classList.add('is-active');
+  }
 
   function renderDropdown(items) {
     if (!items || items.length === 0) {
       dropdown.innerHTML = '<div class="autocomplete-empty">No airports found</div>';
-      dropdown.classList.add('active');
+      openDropdown();
       return;
     }
 
@@ -35,10 +47,11 @@ export function setupAirportAutocomplete(inputId, dropdownId, onSelect) {
       </div>
     `).join('');
 
-    dropdown.classList.add('active');
+    openDropdown();
   }
 
   input.addEventListener('focus', () => {
+    input.select();
     const list = searchAirports(input.value);
     renderDropdown(list);
   });
@@ -46,6 +59,13 @@ export function setupAirportAutocomplete(inputId, dropdownId, onSelect) {
   input.addEventListener('input', (e) => {
     const list = searchAirports(e.target.value);
     renderDropdown(list);
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDropdown();
+      input.blur();
+    }
   });
 
   dropdown.addEventListener('click', (e) => {
@@ -57,13 +77,13 @@ export function setupAirportAutocomplete(inputId, dropdownId, onSelect) {
         input.value = `${airport.city} (${airport.code})`;
         onSelect(airport);
       }
-      dropdown.classList.remove('active');
+      closeDropdown();
     }
   });
 
   document.addEventListener('click', (e) => {
     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.remove('active');
+      closeDropdown();
     }
   });
 }

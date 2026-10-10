@@ -225,8 +225,16 @@
     width: 100%;
     position: relative;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     background: #ffffff;
+  }
+
+  .autocomplete-dropdown {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .field-origin {

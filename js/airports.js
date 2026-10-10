@@ -87,13 +87,23 @@ export function searchAirports(query) {
   if (!query || query.trim() === '') {
     return AIRPORTS_DATABASE.filter(a => a.popular).slice(0, 8);
   }
-  const q = query.trim().toLowerCase();
-  return AIRPORTS_DATABASE.filter(a =>
+  const clean = query.replace(/\(.*?\)/g, '').trim();
+  const q = (clean || query).trim().toLowerCase();
+  const rawQ = query.trim().toLowerCase();
+
+  const matches = AIRPORTS_DATABASE.filter(a =>
     a.code.toLowerCase().includes(q) ||
     a.city.toLowerCase().includes(q) ||
     a.country.toLowerCase().includes(q) ||
-    a.name.toLowerCase().includes(q)
-  ).slice(0, 8);
+    a.name.toLowerCase().includes(q) ||
+    a.code.toLowerCase().includes(rawQ) ||
+    a.city.toLowerCase().includes(rawQ)
+  );
+
+  if (matches.length === 0) {
+    return AIRPORTS_DATABASE.filter(a => a.popular).slice(0, 8);
+  }
+  return matches.slice(0, 8);
 }
 
 // Helper to get airport by code

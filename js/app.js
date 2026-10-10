@@ -260,14 +260,24 @@ function setupTravellersPopover() {
   const doneBtn = document.getElementById('btn-done-travellers');
   if (!trigger || !popover) return;
 
+  const wrapper = trigger.closest('.search-field-wrapper');
+
   function closeTravellers() {
     popover.classList.remove('active');
     backdrop?.classList.remove('active');
+    if (wrapper) wrapper.classList.remove('is-active');
   }
 
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
+    // Close other dropdowns
+    document.getElementById('flight-origin-dropdown')?.classList.remove('active');
+    document.getElementById('flight-dest-dropdown')?.classList.remove('active');
+    document.getElementById('pill-trip-dropdown')?.classList.remove('active');
+    document.getElementById('pill-bags-dropdown')?.classList.remove('active');
+
     const isActive = popover.classList.toggle('active');
+    if (wrapper) wrapper.classList.toggle('is-active', isActive);
     if (isActive) {
       backdrop?.classList.add('active');
     } else {
